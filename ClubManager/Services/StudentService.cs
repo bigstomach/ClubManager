@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ClubManager.ViewObject;
+using ClubManager.ViewObjects;
 
 namespace ClubManager.Services
 {

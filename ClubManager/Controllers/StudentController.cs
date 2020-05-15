@@ -2,7 +2,7 @@ using ClubManager.helpers;
 using ClubManager.Services;
 using ClubManager.Helpers;
 using ClubManager.QueryObjects;
-using ClubManager.ViewObject;
+using ClubManager.ViewObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

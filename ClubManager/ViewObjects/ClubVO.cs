@@ -1,6 +1,6 @@
 using System;
 
-namespace ClubManager.ViewObject
+namespace ClubManager.ViewObjects
 {
     public class ClubVO
     {
