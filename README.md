@@ -15,3 +15,5 @@
 ![](docs/真查看.png) 
 7. "+"下新建"Query Console",然后可以写sql语句对表进行操作，不要擅自把表结构改了！！  
 ![](docs/新建queryconsole.png)
+### .net core
+1.项目总体框架

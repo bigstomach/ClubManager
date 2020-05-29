@@ -27,6 +27,8 @@ namespace ClubManager.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
+        [ProducesResponseType(typeof(AuthUser),200)]
+        [ProducesResponseType(400)]
         public IActionResult Login([FromBody] LoginQO log)
         {
             var user =_userService.Authenticate(log);
@@ -37,6 +39,8 @@ namespace ClubManager.Controllers
         
         [AllowAnonymous]
         [HttpPost("register")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
         public IActionResult Register([FromBody] RegisterQO reg)
         {
             try
