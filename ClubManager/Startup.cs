@@ -71,6 +71,7 @@ namespace ClubManager
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IStudentService,StudentService>();
             services.AddScoped<IAdminService,AdminService>();
+            services.AddScoped<IManagerService, ManagerService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSwaggerGen(c =>
