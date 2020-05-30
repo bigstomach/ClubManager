@@ -28,7 +28,14 @@ namespace ClubManager
         public virtual DbSet<Students> Students { get; set; }
         public virtual DbSet<Users> Users { get; set; }
 
-        
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseOracle("User ID=bigstomach;Password=bigstomach;Data Source=139.9.134.43:1521/ORCL;");
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -158,9 +165,6 @@ namespace ClubManager
                 entity.HasIndex(e => e.ClubId)
                     .HasName("PK_Clubs")
                     .IsUnique();
-
-                entity.HasIndex(e => e.StudentId)
-                    .HasName("IX_Club_StudentId");
 
                 entity.HasIndex(e => e.UserId)
                     .HasName("IX_Club_UserId");

@@ -22,9 +22,10 @@ namespace ClubManager.Controllers
         {
             _studentService = studentService;
         }
-
-        [HttpGet("InClub")]
-        public IActionResult InClub(StuInClubQO sc)
+        
+        [HttpGet("inClub")]
+        [ProducesResponseType(typeof(PaginatedList<ClubVO>),200)]
+        public IActionResult InClub([FromBody]StuInClubQO sc)
         {
             var id = Utils.GetCurrentUserId(this.User);
             var username = Utils.GetCurrentUsername(this.User);
