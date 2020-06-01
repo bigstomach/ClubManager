@@ -59,7 +59,6 @@ namespace ClubManager.Services
                 Place = aq.Place,
                 Time = aq.Time,
                 ApplyDate = DateTime.Now,
-                Status = false,
                 Description = aq.Description,
                 ClubId = GetRelatedClub(userId).ClubId,
                 IsPublic = aq.IsPublic
