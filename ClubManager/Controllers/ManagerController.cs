@@ -26,7 +26,7 @@ namespace ClubManager.Controllers
         public IActionResult GetActivities([FromBody] PageQO pq)
         {
             var userId = Utils.GetCurrentUserId(this.User);
-            var acts = _managerService.GetActivities(userId,pq.Query);
+            var acts = _managerService.GetActs(userId,pq.Query);
             return Ok(PaginatedList<ActivitiesVO>.Create(acts,pq.PageNumber ?? 1,pq.PageSize));
         }
 
@@ -45,7 +45,7 @@ namespace ClubManager.Controllers
         public IActionResult GetActById(long id)
         {
             var userId = Utils.GetCurrentUserId(this.User);
-            var act = _managerService.GetActivities(userId,id);
+            var act = _managerService.GetOneAct(userId,id);
             if (act == null)
             {
                 return NotFound();

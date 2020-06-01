@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClubManager.Services
 {
-    public class ManagerService: IManagerService
+    public class ManagerService : IManagerService
     {
         private readonly ModelContext _context;
-        
+
         public ManagerService(ModelContext context)
         {
             _context = context;
@@ -21,23 +21,26 @@ namespace ClubManager.Services
             return _context.Clubs.FirstOrDefault(c => c.UserId == id);
         }
 
-        public IQueryable<ActivitiesVO> GetActivities(long userId, string query)
+        public IQueryable<ActivitiesVO> GetActs(long userId, string query)
         {
-            var acts = _context.Activities
-                .Where(a => a.ClubId== GetRelatedClub(userId).ClubId)
-                .Select(act=>new ActivitiesVO
+            var acts = from activity in _context.Activities
+                join activityAudit in _context.ActivityAudit
+                    on activity.ActivityId equals activityAudit.ActivityId
+                where activity.ClubId == GetRelatedClub(userId).ClubId
+                select new ActivitiesVO
                 {
-                    ActivityId = act.ActivityId,
-                    Name = act.Name,
-                    Fund = act.Fund,
-                    Cost =act.Cost,
-                    ApplyDate = act.ApplyDate,
-                    Place = act.Place,
-                    Description = act.Description,
-                    Time = act.Time,
-                    Status = act.Status,
-                    IsPublic = act.IsPublic
-                });
+                    ActivityId = activity.ActivityId,
+                    Name = activity.Name,
+                    Fund = activity.Fund,
+                    Cost = activity.Cost,
+                    ApplyDate = activity.ApplyDate,
+                    Place = activity.Place,
+                    Description = activity.Description,
+                    Time = activity.Time,
+                    Status = activityAudit.Status,
+                    IsPublic = activity.IsPublic,
+                    Suggestion = activityAudit.Suggestion
+                };
             if (!String.IsNullOrEmpty(query))
             {
                 acts = acts.Where(a => a.Name.Contains(query));
@@ -48,22 +51,22 @@ namespace ClubManager.Services
 
         public Activities AddAct(ActQO aq, long userId)
         {
-            var newAct=new Activities
+            var newAct = new Activities
             {
                 Name = aq.Name,
                 Fund = aq.Fund,
-                Cost =aq.Cost,
+                Cost = aq.Cost,
                 Place = aq.Place,
                 Time = aq.Time,
                 ApplyDate = DateTime.Now,
                 Status = false,
                 Description = aq.Description,
-                ClubId= GetRelatedClub(userId).ClubId,
+                ClubId = GetRelatedClub(userId).ClubId,
                 IsPublic = aq.IsPublic
             };
             _context.Activities.Add(newAct);
             _context.SaveChanges();
-            var newActAudit=new ActivityAudit
+            var newActAudit = new ActivityAudit
             {
                 ActivityId = newAct.ActivityId,
                 Status = false,
@@ -73,47 +76,32 @@ namespace ClubManager.Services
             return newAct;
         }
 
-        public ActivitiesVO GetActivities(long userId, long id)
+        public ActivitiesVO GetOneAct(long userId, long id)
         {
-            var oneAct = _context.Activities
-                .Where(a => a.ClubId == GetRelatedClub(userId).ClubId && a.ActivityId == id)
-                .Select(act => new ActivitiesVO
-                {
-                    ActivityId = act.ActivityId,
-                    Name = act.Name,
-                    Fund = act.Fund,
-                    Cost = act.Cost,
-                    ApplyDate = act.ApplyDate,
-                    Place = act.Place,
-                    Description = act.Description,
-                    Time = act.Time,
-                    Status = act.Status,
-                    IsPublic = act.IsPublic
-                }).FirstOrDefault();
-            return oneAct;
+            var act = GetActs(userId, "").FirstOrDefault(a => a.ActivityId == id);
+            return act;
         }
 
         public bool UpdateAct(UpdateActQO aq, long userId)
         {
-            var Act = _context.Activities.FirstOrDefault(a =>
+            var act = _context.Activities.FirstOrDefault(a =>
                 a.ClubId == GetRelatedClub(userId).ClubId && a.ActivityId == aq.ActivityId);
-            if (Act == null)
+            if (act == null)
                 return false;
-            Act.Fund = aq.Fund;
-            Act.Cost = aq.Cost;
-            Act.Description = aq.Description;
-           _context.SaveChanges();
+            act.Fund = aq.Fund;
+            act.Cost = aq.Cost;
+            act.Description = aq.Description;
+            _context.SaveChanges();
             return true;
         }
 
         public bool DeleteAct(long id, long userId)
         {
-            var a = _context.Activities.Find(id);
-            if (a == null||a.ClubId!=GetRelatedClub(userId).ClubId) return false;
-            _context.Activities.Remove(a);
+            var act = _context.Activities.Find(id);
+            if (act == null || act.ClubId != GetRelatedClub(userId).ClubId) return false;
+            _context.Activities.Remove(act);
             _context.SaveChanges();
             return true;
         }
-
     }
 }

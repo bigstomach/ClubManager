@@ -14,5 +14,6 @@ namespace ClubManager.ViewObjects
         public bool? Status { get; set; }
         public string Description { get; set; }
         public bool IsPublic { get; set; }
+        public string Suggestion { get; set; }
     }
 }
