@@ -36,7 +36,6 @@ namespace ClubManager.Controllers
         public IActionResult PostSpec([FromBody] PostSpecQO ps)
         {
             var userId = Utils.GetCurrentUserId(this.User);
-            Console.WriteLine(userId);
             var spec=_adminService.PostSpec(ps,userId);
             return CreatedAtAction(nameof(GetSpecById), new {id = spec.SpecificationId}, spec);
         }
@@ -44,7 +43,7 @@ namespace ClubManager.Controllers
         //通过id获取一条社团制度
         [HttpGet("getSpecification/{id}")]
         [ProducesResponseType(typeof(SpecVO),200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public IActionResult GetSpecById(long id)
         {
             var spec = _adminService.GetSpec(id);

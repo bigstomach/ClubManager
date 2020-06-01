@@ -25,12 +25,12 @@ namespace ClubManager.Controllers
         
         [HttpGet("inClub")]
         [ProducesResponseType(typeof(PaginatedList<ClubVO>),200)]
-        public IActionResult InClub([FromBody]StuInClubQO sc)
+        public IActionResult InClub([FromBody]PageQO pq)
         {
             var id = Utils.GetCurrentUserId(this.User);
             var username = Utils.GetCurrentUsername(this.User);
-            var clubs = _studentService.SearchInClub(id,sc.Query,sc.Status);
-            return Ok(PaginatedList<ClubVO>.Create(clubs,sc.PageNumber ?? 1,sc.PageSize));
+            var clubs = _studentService.SearchInClub(id,pq.Query,pq.Status);
+            return Ok(PaginatedList<ClubVO>.Create(clubs,pq.PageNumber ?? 1,pq.PageSize));
         }
 
     }
