@@ -23,15 +23,23 @@ namespace ClubManager.Controllers
             _studentService = studentService;
         }
         
-        [HttpGet("inClub")]
+        [HttpPost("inClub")]
         [ProducesResponseType(typeof(PaginatedList<ClubVO>),200)]
         public IActionResult InClub([FromBody]PageQO pq)
         {
-            var id = Utils.GetCurrentUserId(this.User);
+            var userId = Utils.GetCurrentUserId(this.User);
             var username = Utils.GetCurrentUsername(this.User);
-            var clubs = _studentService.SearchInClub(id,pq.Query,pq.Status);
+            var clubs = _studentService.SearchInClub(userId,pq.Query,pq.Status);
             return Ok(PaginatedList<ClubVO>.Create(clubs,pq.PageNumber ?? 1,pq.PageSize));
         }
+
+        [HttpPost("getStudentName")]
+        public IActionResult GetName()
+        {
+            var userId=Utils.GetCurrentUserId(this.User);
+            return Ok(_studentService.GetStudentName(userId));
+        }
+        
 
     }
 

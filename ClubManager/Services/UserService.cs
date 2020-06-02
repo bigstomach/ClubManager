@@ -39,6 +39,7 @@ namespace ClubManager.Services
                 return null;
 
             var authUser=new AuthUser{UserId = user.UserId,UserType = user.UserType};
+            
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret));
             
             string [] role = {"Student", "Manager","Admin"};

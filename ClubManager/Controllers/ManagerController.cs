@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ClubManager.helpers;
 using ClubManager.Helpers;
 using ClubManager.QueryObjects;
@@ -21,7 +22,7 @@ namespace ClubManager.Controllers
             _managerService = managerService;
         }
 
-        [HttpGet("getActivities")]
+        [HttpPost("getActivities")]
         [ProducesResponseType(typeof(PaginatedList<ActivitiesVO>),200)]
         public IActionResult GetActivities([FromBody] PageQO pq)
         {
@@ -30,7 +31,7 @@ namespace ClubManager.Controllers
             return Ok(PaginatedList<ActivitiesVO>.Create(acts,pq.PageNumber ?? 1,pq.PageSize));
         }
 
-        [HttpPost("addActivity")]
+        [HttpPost("addOneActivity")]
         [ProducesResponseType(typeof(ActivitiesVO),200)]
         public IActionResult AddActivities([FromBody] ActQO aq)
         {
@@ -39,7 +40,7 @@ namespace ClubManager.Controllers
             return CreatedAtAction(nameof(GetActById), new {id = newAct.ActivityId}, newAct);
         }
 
-        [HttpGet("getOneActivity/{id}")]
+        [HttpPost("getOneActivity/{id}")]
         [ProducesResponseType(typeof(ActivitiesVO),200)]
         [ProducesResponseType(404)]
         public IActionResult GetActById(long id)
@@ -50,10 +51,10 @@ namespace ClubManager.Controllers
             {
                 return NotFound();
             }
-            return Ok(act);
+            return Ok();
         }
 
-        [HttpPut("updateOneActivity/{id}")]
+        [HttpPost("updateOneActivity/{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(string),404)]
         public IActionResult UpdateAct([FromBody]UpdateActQO aq)
@@ -64,7 +65,7 @@ namespace ClubManager.Controllers
             return NotFound();
         }
         
-        [HttpDelete("deleteActivity/{id}")]
+        [HttpPost("deleteOneActivity/{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public IActionResult DeleteSpec(long id)
@@ -73,6 +74,13 @@ namespace ClubManager.Controllers
             var exist = _managerService.DeleteAct(id,userId);
             if (exist) return NoContent();
             return NotFound();
+        }
+
+        [HttpPost("getClubName")]
+        public IActionResult GetClubName()
+        {
+            var userId = Utils.GetCurrentUserId(this.User);
+            return Ok(_managerService.GetClubName(userId));
         }
         
     }

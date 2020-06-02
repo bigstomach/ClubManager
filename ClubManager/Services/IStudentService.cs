@@ -7,5 +7,6 @@ namespace ClubManager.Services
     public interface IStudentService
     {
         IQueryable<ClubVO> SearchInClub(long id,string query,bool status);
+        string GetStudentName(long userId);
     }
 }

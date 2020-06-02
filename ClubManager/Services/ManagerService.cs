@@ -21,6 +21,11 @@ namespace ClubManager.Services
             return _context.Clubs.FirstOrDefault(c => c.UserId == id);
         }
 
+        public string GetClubName(long userId)
+        {
+            return GetRelatedClub(userId).Name;
+        }
+
         public IQueryable<ActivitiesVO> GetActs(long userId, string query)
         {
             var acts = from activity in _context.Activities

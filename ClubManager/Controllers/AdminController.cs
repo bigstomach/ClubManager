@@ -22,7 +22,7 @@ namespace ClubManager.Controllers
         }
 
         //获取所有社团制度并分页
-        [HttpGet("getSpecification")]
+        [HttpPost("getSpecifications")]
         [ProducesResponseType(typeof(PaginatedList<SpecVO>),200)]
         public ActionResult<PaginatedList<SpecVO>> GetSpec([FromBody] GetSpecQO gs)
         {
@@ -31,7 +31,7 @@ namespace ClubManager.Controllers
         }
         
         //提交一条新的社团制度
-        [HttpPost("postSpecification")]
+        [HttpPost("postOneSpecification")]
         [ProducesResponseType(typeof(SpecVO),200)]
         public IActionResult PostSpec([FromBody] PostSpecQO ps)
         {
@@ -41,7 +41,7 @@ namespace ClubManager.Controllers
         }
         
         //通过id获取一条社团制度
-        [HttpGet("getSpecification/{id}")]
+        [HttpPost("getOneSpecification/{id}")]
         [ProducesResponseType(typeof(SpecVO),200)]
         [ProducesResponseType(404)]
         public IActionResult GetSpecById(long id)
@@ -55,7 +55,7 @@ namespace ClubManager.Controllers
         }
         
         //通过id修改一条社团制度
-        [HttpPut("putSpecification/{id}")]
+        [HttpPost("putOneSpecification/{id}")]
         [ProducesResponseType(204)]
         public IActionResult PutSpec([FromBody]PostSpecQO ps)
         {
@@ -65,7 +65,7 @@ namespace ClubManager.Controllers
         }
 
         //通过id删除一条社团制度
-        [HttpDelete("deleteSpecification/{id}")]
+        [HttpPost("deleteOneSpecification/{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public IActionResult DeleteSpec(long id)

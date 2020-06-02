@@ -36,5 +36,10 @@ namespace ClubManager.Services
 
             return clubs;
         }
+
+        public string GetStudentName(long userId)
+        {
+            return _context.Students.First(s => s.UserId == userId).Name;
+        }
     }
 }
