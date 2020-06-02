@@ -73,5 +73,14 @@ namespace ClubManager.Services
             return true;
         }
 
+        public Students AddNewStudent(NewStuQO stu)
+        {
+            if (_context.Students.FirstOrDefault(s => s.Number == stu.Number)!=null) return null;
+            var newStu = new Students {Number = stu.Number, Name = stu.Name, Grade = stu.Grade, Major = stu.Major,Phone = stu.Phone};
+            _context.Students.Add(newStu);
+            _context.SaveChanges();
+            return newStu;
+        }
+
     }
 }

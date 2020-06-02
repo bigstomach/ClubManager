@@ -25,6 +25,7 @@ namespace ClubManager.Controllers
             _userService = userService;
         }
 
+        //登录
         [AllowAnonymous]
         [HttpPost("login")]
         [ProducesResponseType(typeof(AuthUser),200)]
@@ -36,7 +37,7 @@ namespace ClubManager.Controllers
             return Ok(user);
         }
         
-        
+        //注册
         [AllowAnonymous]
         [HttpPost("register")]
         [ProducesResponseType(200)]

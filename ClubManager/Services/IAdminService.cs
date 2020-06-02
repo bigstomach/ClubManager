@@ -11,5 +11,6 @@ namespace ClubManager.Services
         SpecVO GetSpec(long id);
         void PutSpec(PostSpecQO ps, long id, long userId);
         bool DeleteSpec(long id);
+        Students AddNewStudent(NewStuQO stu);
     }
 }
