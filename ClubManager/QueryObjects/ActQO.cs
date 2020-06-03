@@ -4,6 +4,7 @@ namespace ClubManager.QueryObjects
 {
     public class ActQO
     {
+        public long ActivityId { get; set; }
         public string Name { get; set; }
         public int Fund { get; set; }
         public int Cost { get; set; }

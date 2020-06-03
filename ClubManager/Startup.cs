@@ -78,7 +78,7 @@ namespace ClubManager
             {
                 options.AddPolicy(MyAllowSpecificOrigins, policy =>
                 {
-                    policy.WithOrigins("http://localhost:8080","http://192.168.0.107:8080")
+                    policy.WithOrigins("http://localhost:8080","http://192.168.0.107:8080","http://47.103.203.188:8080")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();

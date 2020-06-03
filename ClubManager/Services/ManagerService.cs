@@ -86,15 +86,14 @@ namespace ClubManager.Services
             return act;
         }
 
-        public bool UpdateAct(UpdateActQO aq, long userId)
+        public bool UpdateAct(ActQO aq, long userId)
         {
             var act = _context.Activities.FirstOrDefault(a =>
                 a.ClubId == GetRelatedClub(userId).ClubId && a.ActivityId == aq.ActivityId);
             if (act == null)
                 return false;
-            act.Fund = aq.Fund;
-            act.Cost = aq.Cost;
-            act.Description = aq.Description;
+            act.Name = aq.Name; act.Fund = aq.Fund; act.Cost = aq.Cost; act.Place = aq.Place; act.Description = aq.Description;
+            act.Time = aq.Time; act.IsPublic = aq.IsPublic;
             _context.SaveChanges();
             return true;
         }

@@ -63,7 +63,7 @@ namespace ClubManager.Controllers
         [HttpPost("updateOneActivity/{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateAct([FromBody]UpdateActQO aq)
+        public IActionResult UpdateAct([FromBody]ActQO aq)
         {
             var userId = Utils.GetCurrentUserId(this.User);
             bool success=_managerService.UpdateAct(aq, userId);
