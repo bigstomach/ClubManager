@@ -68,13 +68,16 @@ namespace ClubManager.Services
                 ClubId = GetRelatedClub(userId).ClubId,
                 IsPublic = aq.IsPublic
             };
+            
             _context.Activities.Add(newAct);
             _context.SaveChanges();
+            
             var newActAudit = new ActivityAudit
             {
                 ActivityId = newAct.ActivityId,
                 Status = false,
             };
+            
             _context.ActivityAudit.Add(newActAudit);
             _context.SaveChanges();
             return newAct;
@@ -90,10 +93,18 @@ namespace ClubManager.Services
         {
             var act = _context.Activities.FirstOrDefault(a =>
                 a.ClubId == GetRelatedClub(userId).ClubId && a.ActivityId == aq.ActivityId);
+            
             if (act == null)
                 return false;
-            act.Name = aq.Name; act.Fund = aq.Fund; act.Cost = aq.Cost; act.Place = aq.Place; act.Description = aq.Description;
-            act.Time = aq.Time; act.IsPublic = aq.IsPublic;
+            
+            act.Name = aq.Name;
+            act.Fund = aq.Fund;
+            act.Cost = aq.Cost;
+            act.Place = aq.Place;
+            act.Description = aq.Description;
+            act.Time = aq.Time;
+            act.IsPublic = aq.IsPublic;
+            
             _context.SaveChanges();
             return true;
         }
@@ -102,6 +113,7 @@ namespace ClubManager.Services
         {
             var act = _context.Activities.Find(id);
             if (act == null || act.ClubId != GetRelatedClub(userId).ClubId) return false;
+            
             _context.Activities.Remove(act);
             _context.SaveChanges();
             return true;

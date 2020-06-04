@@ -13,17 +13,17 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ClubManager.Services
 {
-    public class UserService: IUserService
+    public class UserService : IUserService
     {
         private readonly ModelContext _context;
         private readonly AppSettings _appSettings;
 
-        public UserService(ModelContext context,IOptions<AppSettings> options)
+        public UserService(ModelContext context, IOptions<AppSettings> options)
         {
             _context = context;
             _appSettings = options.Value;
         }
-        
+
         public AuthUser Authenticate(LoginQO log)
         {
             var username = log.Username;
@@ -34,29 +34,33 @@ namespace ClubManager.Services
                        (u.Students.FirstOrDefault() != null && u.Students.FirstOrDefault().Number == username)) &&
                       u.Password == password
                 select u).FirstOrDefault();
-            
+
             if (user == null)
                 return null;
 
-            var authUser=new AuthUser{UserId = user.UserId,UserType = user.UserType};
-            
+            var authUser = new AuthUser {UserId = user.UserId, UserType = user.UserType};
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret));
-            
-            string [] role = {"Student", "Manager","Admin"};
+
+            string[] role = {"Student", "Manager", "Admin"};
 
             var jwt = new JwtSecurityToken(
-                claims:new List<Claim> { new Claim(ClaimTypes.NameIdentifier,user.UserId.ToString()),new Claim(ClaimTypes.Name, user.UserName), new Claim(ClaimTypes.Role, role[user.UserType]) },
-                notBefore:DateTime.UtcNow,
-                expires:DateTime.UtcNow.AddHours(2), // 两小时后过期
-                signingCredentials:new SigningCredentials(key,SecurityAlgorithms.HmacSha256)
+                claims: new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName), new Claim(ClaimTypes.Role, role[user.UserType])
+                },
+                notBefore: DateTime.UtcNow,
+                expires: DateTime.UtcNow.AddHours(2), // 两小时后过期
+                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
 
-            var tokenHandler=new JwtSecurityTokenHandler();
-            authUser.Token=tokenHandler.WriteToken(jwt);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            authUser.Token = tokenHandler.WriteToken(jwt);
 
             return authUser;
         }
-        
+
 
         public void Register(RegisterQO reg)
         {
@@ -70,15 +74,18 @@ namespace ClubManager.Services
             {
                 throw new InvalidCastException("invalid ID");
             }
+
             if (stu.UserId != null)
             {
                 throw new InvalidCastException("already registered");
             }
+
             var user = _context.Users.SingleOrDefault(u => u.UserName == username);
             if (user != null)
             {
                 throw new InvalidCastException("Username already exists");
             }
+
             var newUser = new Users {UserName = username, Password = password, UserType = 0};
             stu.User = newUser;
             _context.Users.Add(newUser);

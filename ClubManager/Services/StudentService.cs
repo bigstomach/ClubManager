@@ -29,6 +29,7 @@ namespace ClubManager.Services
                     PresidentName = club.Student.Name,
                     Type = club.Type,
                 };
+            
             if (!String.IsNullOrEmpty(query))
             {
                 clubs = clubs.Where(c => c.Name.Contains(query));

@@ -28,15 +28,15 @@ namespace ClubManager.Controllers
         //登录
         [AllowAnonymous]
         [HttpPost("login")]
-        [ProducesResponseType(typeof(AuthUser),200)]
+        [ProducesResponseType(typeof(AuthUser), 200)]
         [ProducesResponseType(400)]
         public IActionResult Login([FromBody] LoginQO log)
         {
-            var user =_userService.Authenticate(log);
+            var user = _userService.Authenticate(log);
             if (user == null) return BadRequest(new {msg = "invalid name and password"});
             return Ok(user);
         }
-        
+
         //注册
         [AllowAnonymous]
         [HttpPost("register")]
@@ -48,10 +48,11 @@ namespace ClubManager.Controllers
             {
                 _userService.Register(reg);
             }
-            catch (InvalidCastException  e)
+            catch (InvalidCastException e)
             {
                 return BadRequest(new {msg = e.Message});
             }
+
             return Ok(new {msg = "success"});
         }
     }

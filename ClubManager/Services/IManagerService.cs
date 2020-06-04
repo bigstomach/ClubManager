@@ -7,10 +7,10 @@ namespace ClubManager.Services
     public interface IManagerService
     {
         string GetClubName(long userId);
-        IQueryable<ActivitiesVO> GetActs(long userId,string query);
+        IQueryable<ActivitiesVO> GetActs(long userId, string query);
         Activities AddAct(ActQO aq, long userId);
         ActivitiesVO GetOneAct(long userId, long id);
         bool UpdateAct(ActQO aq, long userId);
-        bool DeleteAct(long id,long userId);
+        bool DeleteAct(long id, long userId);
     }
 }

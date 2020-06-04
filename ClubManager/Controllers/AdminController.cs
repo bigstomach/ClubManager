@@ -12,10 +12,10 @@ namespace ClubManager.Controllers
     [Authorize(Roles = "Admin")]
     [Route("[controller]")]
     [ApiController]
-    public class AdminController:ControllerBase
+    public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
-        
+
         public AdminController(IAdminService adminService)
         {
             _adminService = adminService;
@@ -23,28 +23,28 @@ namespace ClubManager.Controllers
 
         //获取所有社团制度并分页
         [HttpPost("getSpecifications")]
-        [ProducesResponseType(typeof(PaginatedList<SpecVO>),200)]
+        [ProducesResponseType(typeof(PaginatedList<SpecVO>), 200)]
         [ProducesResponseType(404)]
         public ActionResult<PaginatedList<SpecVO>> GetSpec([FromBody] GetSpecQO gs)
         {
             var spec = _adminService.GetSpec(gs.Query);
             if (spec == null) return NotFound();
-            return Ok(PaginatedList<SpecVO>.Create(spec,gs.PageNumber ?? 1,gs.PageSize));
+            return Ok(PaginatedList<SpecVO>.Create(spec, gs.PageNumber ?? 1, gs.PageSize));
         }
-        
+
         //提交一条新的社团制度
         [HttpPost("postOneSpecification")]
         [ProducesResponseType(200)]
         public IActionResult PostSpec([FromBody] PostSpecQO ps)
         {
             var userId = Utils.GetCurrentUserId(this.User);
-            var spec=_adminService.PostSpec(ps,userId);
+            var spec = _adminService.PostSpec(ps, userId);
             return Ok();
         }
-        
+
         //通过id获取一条社团制度
         [HttpPost("getOneSpecification/{id}")]
-        [ProducesResponseType(typeof(SpecVO),200)]
+        [ProducesResponseType(typeof(SpecVO), 200)]
         [ProducesResponseType(404)]
         public IActionResult GetSpecById(long id)
         {
@@ -53,16 +53,17 @@ namespace ClubManager.Controllers
             {
                 return NotFound();
             }
+
             return Ok(spec);
         }
-        
+
         //通过id修改一条社团制度
         [HttpPost("putOneSpecification/{id}")]
         [ProducesResponseType(200)]
-        public IActionResult PutSpec([FromBody]PostSpecQO ps)
+        public IActionResult PutSpec([FromBody] PostSpecQO ps)
         {
             var userId = Utils.GetCurrentUserId(this.User);
-            _adminService.PutSpec(ps,ps.SpecificationId,userId);
+            _adminService.PutSpec(ps, ps.SpecificationId, userId);
             return Ok();
         }
 
@@ -82,8 +83,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(200)]
         public IActionResult AddNewStudent(NewStuQO stu)
         {
-            var newStu=_adminService.AddNewStudent(stu);
-            if (newStu == null) return BadRequest(new {msg="Number already exist"});
+            var newStu = _adminService.AddNewStudent(stu);
+            if (newStu == null) return BadRequest(new {msg = "Number already exist"});
             return Ok();
         }
     }
