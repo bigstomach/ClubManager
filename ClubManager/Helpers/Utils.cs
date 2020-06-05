@@ -4,7 +4,7 @@ namespace ClubManager.Helpers
 {
     public class Utils
     {
-        public static long  GetCurrentUserId(ClaimsPrincipal currentUser)
+        public static long GetCurrentUserId(ClaimsPrincipal currentUser)
         {
             return long.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
         }

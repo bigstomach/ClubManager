@@ -29,6 +29,7 @@ namespace ClubManager
         {
             Configuration = configuration;
         }
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         public IConfiguration Configuration { get; }
         
@@ -72,6 +73,17 @@ namespace ClubManager
             services.AddScoped<IStudentService,StudentService>();
             services.AddScoped<IAdminService,AdminService>();
             services.AddScoped<IManagerService, ManagerService>();
+            
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins, policy =>
+                {
+                    policy.WithOrigins("http://localhost:8080","http://192.168.0.107:8080","http://47.103.203.188:8080")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSwaggerGen(c =>
@@ -93,6 +105,7 @@ namespace ClubManager
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseHttpsRedirection();
             //use Authentication
             app.UseAuthentication();

@@ -67,11 +67,6 @@ namespace ClubManager
                     .IsRequired()
                     .HasColumnType("NVARCHAR2(2000)");
 
-                entity.Property(e => e.Status)
-                    .IsRequired()
-                    .HasDefaultValueSql(@"0 
-");
-
                 entity.Property(e => e.Time).HasColumnType("DATE");
 
                 entity.HasOne(d => d.Club)

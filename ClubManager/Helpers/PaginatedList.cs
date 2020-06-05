@@ -10,13 +10,15 @@ namespace ClubManager.helpers
         public int PageIndex { get; set; }
         public int TotalPages { get; set; }
         
+        public int TotalCount { get; set; }
+        
         public List<T> Data { get; set; }
 
         public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
         {
             PageIndex = pageIndex;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-
+            TotalCount = count;
             Data = items;
         }
         

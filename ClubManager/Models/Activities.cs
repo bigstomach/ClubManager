@@ -18,7 +18,6 @@ namespace ClubManager
         public string Place { get; set; }
         public DateTime Time { get; set; }
         public DateTime ApplyDate { get; set; }
-        public bool? Status { get; set; }
         public string Description { get; set; }
         public long ClubId { get; set; }
         public bool IsPublic { get; set; }

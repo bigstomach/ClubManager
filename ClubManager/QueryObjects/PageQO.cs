@@ -1,6 +1,6 @@
 namespace ClubManager.QueryObjects
 {
-    public class StuInClubQO
+    public class PageQO
     {
         public string Query { get; set; }
         public int? PageNumber { get; set; }

@@ -22,17 +22,27 @@ namespace ClubManager.Controllers
         {
             _studentService = studentService;
         }
-        
-        [HttpGet("inClub")]
-        [ProducesResponseType(typeof(PaginatedList<ClubVO>),200)]
-        public IActionResult InClub([FromBody]StuInClubQO sc)
+
+        //获取学生已加入社团的列表
+        [HttpPost("inClub")]
+        [ProducesResponseType(typeof(PaginatedList<ClubVO>), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult InClub([FromBody] PageQO pq)
         {
-            var id = Utils.GetCurrentUserId(this.User);
+            var userId = Utils.GetCurrentUserId(this.User);
             var username = Utils.GetCurrentUsername(this.User);
-            var clubs = _studentService.SearchInClub(id,sc.Query,sc.Status);
-            return Ok(PaginatedList<ClubVO>.Create(clubs,sc.PageNumber ?? 1,sc.PageSize));
+            var clubs = _studentService.SearchInClub(userId, pq.Query, pq.Status);
+            if (clubs == null) return NotFound();
+            return Ok(PaginatedList<ClubVO>.Create(clubs, pq.PageNumber ?? 1, pq.PageSize));
         }
 
+        //获取学生姓名
+        [HttpPost("getStudentName")]
+        [ProducesResponseType(typeof(NameVO), 200)]
+        public IActionResult GetName()
+        {
+            var userId = Utils.GetCurrentUserId(this.User);
+            return Ok(new NameVO {Name = _studentService.GetStudentName(userId)});
+        }
     }
-
 }
