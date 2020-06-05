@@ -16,6 +16,26 @@ namespace ClubManager.Services
             _context = context;
         }
 
+        public IQueryable<StudentVO> GetStudentInfo(string query)
+        {
+            var stu = _context.Students
+                .Select(s => new StudentVO
+                {
+                    Grade = s.Grade,
+                    Major = s.Major,
+                    Name = s.Name,
+                    Number = s.Number,
+                    Phone = s.Phone,
+                    StudentId = s.StudentId
+                }).AsNoTracking();
+            if (!String.IsNullOrEmpty(query))
+            {
+                stu = stu.Where(s => s.Name.Contains(query));
+            }
+
+            return stu;
+        }
+
         public SpecVO GetSpec(long id)
         {
             var spec = _context.Specifications
@@ -32,6 +52,7 @@ namespace ClubManager.Services
 
         public IQueryable<SpecVO> GetSpec(string query)
         {
+
             var spec = _context.Specifications
                 .Select(s => new SpecVO
                 {
@@ -42,6 +63,7 @@ namespace ClubManager.Services
                     Date = s.Date
                 })
                 .AsNoTracking();
+            
             if (!String.IsNullOrEmpty(query))
             {
                 spec = spec.Where(c => c.Name.Contains(query));
@@ -50,7 +72,7 @@ namespace ClubManager.Services
             return spec;
         }
 
-        public Specifications PostSpec(PostSpecQO ps, long userId)
+        public Specifications AddSpec(SpecQO ps, long userId)
         {
             var newSpec = new Specifications
                 {Content = ps.Content, Date = DateTime.Now, Name = ps.Name, UserId = userId};
@@ -59,7 +81,7 @@ namespace ClubManager.Services
             return newSpec;
         }
 
-        public void PutSpec(PostSpecQO ps, long id, long userId)
+        public void PutSpec(SpecQO ps, long id, long userId)
         {
             var newSpec = new Specifications
                 {SpecificationId = id, Content = ps.Content, Date = DateTime.Now, Name = ps.Name, UserId = userId};

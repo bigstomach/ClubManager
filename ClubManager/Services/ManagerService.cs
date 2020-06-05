@@ -16,16 +16,19 @@ namespace ClubManager.Services
             _context = context;
         }
 
+        //根据id返回社团
         private Clubs GetRelatedClub(long id)
         {
             return _context.Clubs.FirstOrDefault(c => c.UserId == id);
         }
 
+        //获取社团名称
         public string GetClubName(long userId)
         {
             return GetRelatedClub(userId).Name;
         }
 
+        //获取活动并分页
         public IQueryable<ActivitiesVO> GetActs(long userId, string query)
         {
             var acts = from activity in _context.Activities

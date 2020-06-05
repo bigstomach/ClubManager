@@ -21,24 +21,36 @@ namespace ClubManager.Controllers
             _adminService = adminService;
         }
 
+        //获取学生信息并分页
+        [HttpPost("getStudentInfo")]
+        [ProducesResponseType(typeof(PaginatedList<StudentVO>), 200)]
+        [ProducesResponseType(404)]
+        public ActionResult<PaginatedList<StudentVO>> GetStudentInfo([FromBody] PageQO pq)
+        {
+            var stu = _adminService.GetStudentInfo(pq.Query);
+            if (stu == null) return NotFound();
+            return Ok(PaginatedList<StudentVO>.Create(stu, pq.PageNumber ?? 1, pq.PageSize));
+        }
+
+
         //获取所有社团制度并分页
         [HttpPost("getSpecifications")]
         [ProducesResponseType(typeof(PaginatedList<SpecVO>), 200)]
         [ProducesResponseType(404)]
-        public ActionResult<PaginatedList<SpecVO>> GetSpec([FromBody] GetSpecQO gs)
+        public ActionResult<PaginatedList<SpecVO>> GetSpec([FromBody] PageQO pq)
         {
-            var spec = _adminService.GetSpec(gs.Query);
+            var spec = _adminService.GetSpec(pq.Query);
             if (spec == null) return NotFound();
-            return Ok(PaginatedList<SpecVO>.Create(spec, gs.PageNumber ?? 1, gs.PageSize));
+            return Ok(PaginatedList<SpecVO>.Create(spec, pq.PageNumber ?? 1, pq.PageSize));
         }
 
         //提交一条新的社团制度
-        [HttpPost("postOneSpecification")]
+        [HttpPost("addOneSpecification")]
         [ProducesResponseType(200)]
-        public IActionResult PostSpec([FromBody] PostSpecQO ps)
+        public IActionResult addOneSpec([FromBody] SpecQO ps)
         {
             var userId = Utils.GetCurrentUserId(this.User);
-            var spec = _adminService.PostSpec(ps, userId);
+            var spec = _adminService.AddSpec(ps, userId);
             return Ok();
         }
 
@@ -60,7 +72,7 @@ namespace ClubManager.Controllers
         //通过id修改一条社团制度
         [HttpPost("putOneSpecification/{id}")]
         [ProducesResponseType(200)]
-        public IActionResult PutSpec([FromBody] PostSpecQO ps)
+        public IActionResult PutSpec([FromBody] SpecQO ps)
         {
             var userId = Utils.GetCurrentUserId(this.User);
             _adminService.PutSpec(ps, ps.SpecificationId, userId);

@@ -23,7 +23,7 @@ namespace ClubManager.Controllers
             _studentService = studentService;
         }
 
-        //获取学生已加入社团的列表
+        //获取学生已加入社团的列表并分页
         [HttpPost("inClub")]
         [ProducesResponseType(typeof(PaginatedList<ClubVO>), 200)]
         [ProducesResponseType(404)]
