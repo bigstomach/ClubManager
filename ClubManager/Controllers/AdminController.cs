@@ -87,5 +87,15 @@ namespace ClubManager.Controllers
             if (newStu == null) return BadRequest(new {msg = "Number already exist"});
             return Ok();
         }
+
+        //修改一条社团赞助审核（我认为添加赞助审核应该是社团社长方面进行的，管理员方面应该完成的是添加审核意见和结果这些内容）
+        [HttpPost("putOneSponsorshipAudit/{id}")]
+        [ProducesResponseType(200)]
+        public IActionResult PutSponsorAudit([FromBody] PostSponsorAuditQO psa)
+        {
+            var UserId = Utils.GetCurrentUserId(this.User);//貌似是获取当前的用户id？
+            _adminService.PutSponsorAudit(psa,psa.SponsorshipAuditId,UserId);
+            return Ok();
+        }
     }
 }
