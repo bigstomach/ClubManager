@@ -32,8 +32,6 @@ namespace ClubManager.Services
         public IQueryable<ActivitiesVO> GetActs(long userId, string query)
         {
             var acts = from activity in _context.Activities
-                join activityAudit in _context.ActivityAudit
-                    on activity.ActivityId equals activityAudit.ActivityId
                 where activity.ClubId == GetRelatedClub(userId).ClubId
                 select new ActivitiesVO
                 {
@@ -45,9 +43,9 @@ namespace ClubManager.Services
                     Place = activity.Place,
                     Description = activity.Description,
                     Time = activity.Time,
-                    Status = activityAudit.Status,
+                    Status = activity.Status,
                     IsPublic = activity.IsPublic,
-                    Suggestion = activityAudit.Suggestion
+                    Suggestion = activity.Suggestion
                 };
             if (!String.IsNullOrEmpty(query))
             {
@@ -75,14 +73,6 @@ namespace ClubManager.Services
             _context.Activities.Add(newAct);
             _context.SaveChanges();
             
-            var newActAudit = new ActivityAudit
-            {
-                ActivityId = newAct.ActivityId,
-                Status = false,
-            };
-            
-            _context.ActivityAudit.Add(newActAudit);
-            _context.SaveChanges();
             return newAct;
         }
 

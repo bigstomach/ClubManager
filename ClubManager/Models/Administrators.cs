@@ -7,9 +7,9 @@ namespace ClubManager
     {
         public Administrators()
         {
-            ActivityAudit = new HashSet<ActivityAudit>();
+            Activities = new HashSet<Activities>();
             Specifications = new HashSet<Specifications>();
-            SponsorshipAudit = new HashSet<SponsorshipAudit>();
+            Sponsorships = new HashSet<Sponsorships>();
         }
 
         public long UserId { get; set; }
@@ -17,8 +17,8 @@ namespace ClubManager
         public string Department { get; set; }
 
         public virtual Users User { get; set; }
-        public virtual ICollection<ActivityAudit> ActivityAudit { get; set; }
+        public virtual ICollection<Activities> Activities { get; set; }
         public virtual ICollection<Specifications> Specifications { get; set; }
-        public virtual ICollection<SponsorshipAudit> SponsorshipAudit { get; set; }
+        public virtual ICollection<Sponsorships> Sponsorships { get; set; }
     }
 }
