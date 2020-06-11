@@ -107,5 +107,38 @@ namespace ClubManager.Services
             _context.SaveChanges();
             return newStu;
         }
+
+        public IQueryable<SponsorshipVO> GetSponsorship(string query)
+        {
+            var Spon = _context.Sponsorships.Select(
+                s => new SponsorshipVO
+                {
+                    SponsorshipId = s.SponsorshipId,
+                    ClubName = s.Club.Name,
+                    ApplyTime = s.ApplyTime,
+                    Sponsor = s.Sponsor,
+                    Amount = s.Amount,
+                    AdminName=s.Admin.Name,
+                    Status = s.Status
+                }).AsNoTracking();
+            if (query=="unaudited")//查找待审核的赞助
+            {
+                Spon = Spon.Where(s => s.Status == 0);
+            }
+            else if (query=="failed")//查找审核未通过的赞助
+            {
+                Spon = Spon.Where(s => s.Status == 2);
+            }
+            else if (query=="pass")//查找审核已通过的赞助
+            {
+                Spon = Spon.Where(s => s.Status == 1);
+            }
+            else if (query!="all")//如果query输入的值不合法，那么返回空值，表示找不到
+            {
+                Spon = null;
+            }
+
+            return Spon;
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace ClubManager
         public decimal Amount { get; set; }
         public string Requirement { get; set; }
         public long? AdminId { get; set; }
-        public bool? Status { get; set; }
+        public int? Status { get; set; }
         public string Suggestion { get; set; }
 
         public virtual Administrators Admin { get; set; }

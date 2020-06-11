@@ -99,5 +99,16 @@ namespace ClubManager.Controllers
             if (newStu == null) return BadRequest(new {msg = "Number already exist"});
             return Ok();
         }
+
+        //获取所有赞助申请
+        [HttpPost("getSponsorships")]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(typeof(PaginatedList<SponsorshipVO>),200)]
+        public ActionResult<PaginatedList<SponsorshipVO>> GetSponsorships([FromBody] PageQO SponsorshipPage)
+        {
+            var Sponsorships = _adminService.GetSponsorship(SponsorshipPage.Query);
+            if (Sponsorships == null) return NotFound();
+            else return Ok(PaginatedList<SponsorshipVO>.Create(Sponsorships, SponsorshipPage.PageNumber ?? 1, SponsorshipPage.PageSize));
+        }
     }
 }
