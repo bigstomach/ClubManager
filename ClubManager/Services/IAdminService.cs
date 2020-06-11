@@ -13,6 +13,5 @@ namespace ClubManager.Services
         void PutSpec(SpecQO ps, long id, long userId);
         bool DeleteSpec(long id);
         Students AddNewStudent(NewStuQO stu);
-        void PutSponsorAudit(PostSponsorAuditQO psa, long id, long userId);
     }
 }

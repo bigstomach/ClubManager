@@ -107,13 +107,5 @@ namespace ClubManager.Services
             _context.SaveChanges();
             return newStu;
         }
-
-        public void PutSponsorAudit(PostSponsorAuditQO psa,long id,long userId)
-        {
-            var NewSponsorAudit = new SponsorshipAudit
-                { SponsorshipAuditId = id, SponsorshipsId = psa.SponsorshipsId, UserId = userId, Status = psa.Status, Suggestion = psa.Suggestion };
-            _context.Entry(NewSponsorAudit).State = EntityState.Modified;
-            _context.SaveChanges();
-        }
     }
 }
