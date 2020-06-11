@@ -70,7 +70,7 @@ namespace ClubManager.Controllers
         }
 
         //通过id修改一条社团制度
-        [HttpPost("putOneSpecification/{id}")]
+        [HttpPost("updateOneSpecification/{id}")]
         [ProducesResponseType(200)]
         public IActionResult PutSpec([FromBody] SpecQO ps)
         {
@@ -91,7 +91,7 @@ namespace ClubManager.Controllers
         }
 
         //增加一条新生的记录
-        [HttpPost("addNewStudent")]
+        [HttpPost("addOneStudentInfo")]
         [ProducesResponseType(200)]
         public IActionResult AddNewStudent(NewStuQO stu)
         {
