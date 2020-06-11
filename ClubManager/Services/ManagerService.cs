@@ -16,21 +16,22 @@ namespace ClubManager.Services
             _context = context;
         }
 
+        //根据id返回社团
         private Clubs GetRelatedClub(long id)
         {
             return _context.Clubs.FirstOrDefault(c => c.UserId == id);
         }
 
+        //获取社团名称
         public string GetClubName(long userId)
         {
             return GetRelatedClub(userId).Name;
         }
 
+        //获取活动并分页
         public IQueryable<ActivitiesVO> GetActs(long userId, string query)
         {
             var acts = from activity in _context.Activities
-                join activityAudit in _context.ActivityAudit
-                    on activity.ActivityId equals activityAudit.ActivityId
                 where activity.ClubId == GetRelatedClub(userId).ClubId
                 select new ActivitiesVO
                 {
@@ -42,9 +43,9 @@ namespace ClubManager.Services
                     Place = activity.Place,
                     Description = activity.Description,
                     Time = activity.Time,
-                    Status = activityAudit.Status,
+                    Status = activity.Status,
                     IsPublic = activity.IsPublic,
-                    Suggestion = activityAudit.Suggestion
+                    Suggestion = activity.Suggestion
                 };
             if (!String.IsNullOrEmpty(query))
             {
@@ -72,14 +73,6 @@ namespace ClubManager.Services
             _context.Activities.Add(newAct);
             _context.SaveChanges();
             
-            var newActAudit = new ActivityAudit
-            {
-                ActivityId = newAct.ActivityId,
-                Status = false,
-            };
-            
-            _context.ActivityAudit.Add(newActAudit);
-            _context.SaveChanges();
             return newAct;
         }
 

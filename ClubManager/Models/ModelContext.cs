@@ -16,14 +16,12 @@ namespace ClubManager
         }
 
         public virtual DbSet<Activities> Activities { get; set; }
-        public virtual DbSet<ActivityAudit> ActivityAudit { get; set; }
         public virtual DbSet<Administrators> Administrators { get; set; }
         public virtual DbSet<Announcements> Announcements { get; set; }
         public virtual DbSet<Clubs> Clubs { get; set; }
         public virtual DbSet<JoinClubs> JoinClubs { get; set; }
         public virtual DbSet<ParticipateActivity> ParticipateActivity { get; set; }
         public virtual DbSet<Specifications> Specifications { get; set; }
-        public virtual DbSet<SponsorshipAudit> SponsorshipAudit { get; set; }
         public virtual DbSet<Sponsorships> Sponsorships { get; set; }
         public virtual DbSet<Students> Students { get; set; }
         public virtual DbSet<Users> Users { get; set; }
@@ -55,9 +53,13 @@ namespace ClubManager
 
                 entity.Property(e => e.ApplyDate).HasColumnType("DATE");
 
+                entity.Property(e => e.Cost).HasColumnType("NUMBER(10,2)");
+
                 entity.Property(e => e.Description)
                     .IsRequired()
                     .HasColumnType("NVARCHAR2(2000)");
+
+                entity.Property(e => e.Fund).HasColumnType("NUMBER(10,2)");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -67,42 +69,24 @@ namespace ClubManager
                     .IsRequired()
                     .HasColumnType("NVARCHAR2(2000)");
 
-                entity.Property(e => e.Time).HasColumnType("DATE");
-
-                entity.HasOne(d => d.Club)
-                    .WithMany(p => p.Activities)
-                    .HasForeignKey(d => d.ClubId)
-                    .HasConstraintName("FK_Activity_Club");
-            });
-
-            modelBuilder.Entity<ActivityAudit>(entity =>
-            {
-                entity.HasIndex(e => e.ActivityAuditId)
-                    .HasName("PK_ActivityAudit")
-                    .IsUnique();
-
-                entity.HasIndex(e => e.ActivityId)
-                    .HasName("IX_ActAud_Act");
-
-                entity.HasIndex(e => e.UserId)
-                    .HasName("IX_ActAud_User");
-
                 entity.Property(e => e.Status)
                     .IsRequired()
                     .HasDefaultValueSql("0 ");
 
                 entity.Property(e => e.Suggestion).HasColumnType("NVARCHAR2(2000)");
 
-                entity.HasOne(d => d.Activity)
-                    .WithMany(p => p.ActivityAudit)
-                    .HasForeignKey(d => d.ActivityId)
-                    .HasConstraintName("FK_ActAud_Act");
+                entity.Property(e => e.Time).HasColumnType("DATE");
 
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.ActivityAudit)
-                    .HasForeignKey(d => d.UserId)
+                entity.HasOne(d => d.Admin)
+                    .WithMany(p => p.Activities)
+                    .HasForeignKey(d => d.AdminId)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("FK_ActAud_User");
+                    .HasConstraintName("FK_Act_User");
+
+                entity.HasOne(d => d.Club)
+                    .WithMany(p => p.Activities)
+                    .HasForeignKey(d => d.ClubId)
+                    .HasConstraintName("FK_Activity_Club");
             });
 
             modelBuilder.Entity<Administrators>(entity =>
@@ -274,30 +258,6 @@ namespace ClubManager
                     .HasConstraintName("FK_Spec_Admin");
             });
 
-            modelBuilder.Entity<SponsorshipAudit>(entity =>
-            {
-                entity.HasIndex(e => e.SponsorshipAuditId)
-                    .HasName("PK_SponsorshipAudit")
-                    .IsUnique();
-
-                entity.Property(e => e.Status)
-                    .IsRequired()
-                    .HasDefaultValueSql("0 ");
-
-                entity.Property(e => e.Suggestion).HasColumnType("NVARCHAR2(2000)");
-
-                entity.HasOne(d => d.Sponsorships)
-                    .WithMany(p => p.SponsorshipAudit)
-                    .HasForeignKey(d => d.SponsorshipsId)
-                    .HasConstraintName("FK_SponAudit_Spon");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.SponsorshipAudit)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("FK_SponAudit_User");
-            });
-
             modelBuilder.Entity<Sponsorships>(entity =>
             {
                 entity.HasKey(e => e.SponsorshipId)
@@ -319,6 +279,18 @@ namespace ClubManager
                 entity.Property(e => e.Sponsor)
                     .IsRequired()
                     .HasColumnType("NVARCHAR2(2000)");
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasDefaultValueSql("0 ");
+
+                entity.Property(e => e.Suggestion).HasColumnType("NVARCHAR2(2000)");
+
+                entity.HasOne(d => d.Admin)
+                    .WithMany(p => p.Sponsorships)
+                    .HasForeignKey(d => d.AdminId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_Sponsor_User");
 
                 entity.HasOne(d => d.Club)
                     .WithMany(p => p.Sponsorships)

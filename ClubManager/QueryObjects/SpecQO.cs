@@ -2,7 +2,7 @@ using System;
 
 namespace ClubManager.QueryObjects
 {
-    public class PostSpecQO
+    public class SpecQO
     {
         public string Name { get; set; }
         public string Content { get; set; }

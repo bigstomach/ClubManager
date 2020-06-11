@@ -6,8 +6,8 @@ namespace ClubManager.ViewObjects
     {
         public long ActivityId { get; set; }
         public string Name { get; set; }
-        public int Fund { get; set; }
-        public int Cost { get; set; }
+        public decimal Fund { get; set; }
+        public decimal Cost { get; set; }
         public string Place { get; set; }
         public DateTime Time { get; set; }
         public DateTime ApplyDate { get; set; }

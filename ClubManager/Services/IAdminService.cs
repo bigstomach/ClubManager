@@ -6,10 +6,11 @@ namespace ClubManager.Services
 {
     public interface IAdminService
     {
+        IQueryable<StudentVO> GetStudentInfo(string query);
         IQueryable<SpecVO> GetSpec(string query);
-        Specifications PostSpec(PostSpecQO ps, long userId);
+        Specifications AddSpec(SpecQO ps, long userId);
         SpecVO GetSpec(long id);
-        void PutSpec(PostSpecQO ps, long id, long userId);
+        void PutSpec(SpecQO ps, long id, long userId);
         bool DeleteSpec(long id);
         Students AddNewStudent(NewStuQO stu);
         void PutSponsorAudit(PostSponsorAuditQO psa, long id, long userId);
