@@ -133,10 +133,7 @@ namespace ClubManager.Services
             {
                 Spon = Spon.Where(s => s.Status == 1);
             }
-            else if (query!="all")//如果query输入的值不合法，那么返回空值，表示找不到
-            {
-                Spon = null;
-            }
+            //查找所有赞助就直接返回所有值
 
             return Spon;
         }

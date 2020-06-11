@@ -103,9 +103,12 @@ namespace ClubManager.Controllers
         //获取所有赞助申请
         [HttpPost("getSponsorships")]
         [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         [ProducesResponseType(typeof(PaginatedList<SponsorshipVO>),200)]
         public ActionResult<PaginatedList<SponsorshipVO>> GetSponsorships([FromBody] PageQO SponsorshipPage)
         {
+            if (SponsorshipPage.Query != "unaudited" && SponsorshipPage.Query != "failed" && SponsorshipPage.Query != "pass" && SponsorshipPage.Query != "all")
+                return BadRequest();
             var Sponsorships = _adminService.GetSponsorship(SponsorshipPage.Query);
             if (Sponsorships == null) return NotFound();
             else return Ok(PaginatedList<SponsorshipVO>.Create(Sponsorships, SponsorshipPage.PageNumber ?? 1, SponsorshipPage.PageSize));
