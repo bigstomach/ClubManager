@@ -16,9 +16,9 @@ namespace ClubManager.Services
 
         public IQueryable<ClubVO> SearchInClub(long id, string query, bool status)
         {
-            var clubs = from stu in _context.Set<Students>()
-                join joinclub in _context.Set<JoinClubs>() on stu equals joinclub.Student
-                join club in _context.Set<Clubs>() on joinclub.Club equals club
+            var clubs = from stu in _context.Students
+                join joinclub in _context.JoinClubs on stu equals joinclub.Student
+                join club in _context.Clubs on joinclub.Club equals club
                 where stu.UserId == id && joinclub.Status == status
                 select new ClubVO
                 {

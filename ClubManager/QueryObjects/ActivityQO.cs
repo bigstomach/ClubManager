@@ -2,7 +2,7 @@ using System;
 
 namespace ClubManager.QueryObjects
 {
-    public class ActQO
+    public class ActivityQO
     {
         public long ActivityId { get; set; }
         public string Name { get; set; }

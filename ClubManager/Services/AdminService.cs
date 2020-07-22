@@ -36,10 +36,10 @@ namespace ClubManager.Services
             return stu;
         }
 
-        public SpecVO GetSpec(long id)
+        public SpecificationVO GetSpec(long id)
         {
             var spec = _context.Specifications
-                .Select(s => new SpecVO
+                .Select(s => new SpecificationVO
                 {
                     SpecificationId = s.SpecificationId,
                     AdminName = s.User.Name,
@@ -50,11 +50,11 @@ namespace ClubManager.Services
             return spec;
         }
 
-        public IQueryable<SpecVO> GetSpec(string query)
+        public IQueryable<SpecificationVO> GetSpec(string query)
         {
 
             var spec = _context.Specifications
-                .Select(s => new SpecVO
+                .Select(s => new SpecificationVO
                 {
                     SpecificationId = s.SpecificationId,
                     AdminName = s.User.Name,
@@ -72,7 +72,7 @@ namespace ClubManager.Services
             return spec;
         }
 
-        public Specifications AddSpec(SpecQO ps, long userId)
+        public Specifications AddSpec(SpecificationQO ps, long userId)
         {
             var newSpec = new Specifications
                 {Content = ps.Content, Date = DateTime.Now, Name = ps.Name, UserId = userId};
@@ -81,7 +81,7 @@ namespace ClubManager.Services
             return newSpec;
         }
 
-        public void PutSpec(SpecQO ps, long id, long userId)
+        public void PutSpec(SpecificationQO ps, long id, long userId)
         {
             var newSpec = new Specifications
                 {SpecificationId = id, Content = ps.Content, Date = DateTime.Now, Name = ps.Name, UserId = userId};
@@ -98,11 +98,11 @@ namespace ClubManager.Services
             return true;
         }
 
-        public Students AddNewStudent(NewStuQO stu)
+        public Students AddNewStudent(NewStudentQO student)
         {
-            if (_context.Students.FirstOrDefault(s => s.Number == stu.Number) != null) return null;
+            if (_context.Students.FirstOrDefault(s => s.Number == student.Number) != null) return null;
             var newStu = new Students
-                {Number = stu.Number, Name = stu.Name, Grade = stu.Grade, Major = stu.Major, Phone = stu.Phone};
+                {Number = student.Number, Name = student.Name, Grade = student.Grade, Major = student.Major, Phone = student.Phone};
             _context.Students.Add(newStu);
             _context.SaveChanges();
             return newStu;
@@ -121,19 +121,19 @@ namespace ClubManager.Services
                     AdminName=s.Admin.Name,
                     Status = s.Status
                 }).AsNoTracking();
-            if (query=="unaudited")//²éÕÒ´ýÉóºËµÄÔÞÖú
+            if (query=="unaudited")//ï¿½ï¿½ï¿½Ò´ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½
             {
                 Spon = Spon.Where(s => s.Status == 0);
             }
-            else if (query=="failed")//²éÕÒÉóºËÎ´Í¨¹ýµÄÔÞÖú
+            else if (query=="failed")//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             {
                 Spon = Spon.Where(s => s.Status == 2);
             }
-            else if (query=="pass")//²éÕÒÉóºËÒÑÍ¨¹ýµÄÔÞÖú
+            else if (query=="pass")//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             {
                 Spon = Spon.Where(s => s.Status == 1);
             }
-            //²éÕÒËùÓÐÔÞÖú¾ÍÖ±½Ó·µ»ØËùÓÐÖµ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½Ó·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
 
             return Spon;
         }
