@@ -37,7 +37,7 @@ namespace ClubManager.Controllers
         }
         
         //获取全部社团信息并分页
-        [HttpPost("getclubInfo")]
+        [HttpPost("getClubInfo")]
         [ProducesResponseType(typeof(PaginatedList<ClubVO>), 200)]
         [ProducesResponseType(404)]
         public ActionResult<PaginatedList<ClubVO>> GetClubInfo([FromBody] PageQO pq)
@@ -48,13 +48,13 @@ namespace ClubManager.Controllers
         }
         
         //通过社团ID返回社团简介
-        [HttpPost("getclub_description/{clubid}")]
+        [HttpPost("getClubDescription/{id}")]
         [ProducesResponseType(typeof(PaginatedList<ClubVO>), 200)]
         [ProducesResponseType(404)]
-        public IActionResult Getclub_description(long Clubid)
+        public IActionResult Getclub_description(long id)
         {
             var userId = Utils.GetCurrentUserId(this.User);
-            var des = _studentService.GetClubDescription(Clubid);
+            var des = _studentService.GetClubDescription(id);
             if (des == null)
             {
                 return NotFound();
