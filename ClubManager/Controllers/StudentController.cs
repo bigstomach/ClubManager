@@ -35,7 +35,34 @@ namespace ClubManager.Controllers
             if (clubs == null) return NotFound();
             return Ok(PaginatedList<ClubVO>.Create(clubs, pq.PageNumber ?? 1, pq.PageSize));
         }
+        
+        //获取全部社团信息并分页
+        [HttpPost("getclubInfo")]
+        [ProducesResponseType(typeof(PaginatedList<ClubVO>), 200)]
+        [ProducesResponseType(404)]
+        public ActionResult<PaginatedList<ClubVO>> GetClubInfo([FromBody] PageQO pq)
+        {
+            var clubs = _studentService.GetClubInfo(pq.Query);
+            if (clubs == null) return NotFound();
+            return Ok(PaginatedList<ClubVO>.Create(clubs, pq.PageNumber ?? 1, pq.PageSize));
+        }
+        
+        //通过社团ID返回社团简介
+        [HttpPost("getclub_description/{clubid}")]
+        [ProducesResponseType(typeof(PaginatedList<ClubVO>), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult Getclub_description(long Clubid)
+        {
+            var userId = Utils.GetCurrentUserId(this.User);
+            var des = _studentService.GetClubDescription(Clubid);
+            if (des == null)
+            {
+                return NotFound();
+            }
 
+            return Ok(des);
+        }
+        
         //获取学生姓名
         [HttpPost("getStudentName")]
         [ProducesResponseType(typeof(NameVO), 200)]
