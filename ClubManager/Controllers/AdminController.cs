@@ -20,6 +20,10 @@ namespace ClubManager.Controllers
         {
             _adminService = adminService;
         }
+        
+        // ---------------------------------------------------------------------------------------
+        // ------------------------------------学生管理--------------------------------------------
+        // ---------------------------------------------------------------------------------------  
 
         //获取学生信息并分页
         [HttpPost("getStudentInfo")]
@@ -31,23 +35,36 @@ namespace ClubManager.Controllers
             if (stu == null) return NotFound();
             return Ok(PaginatedList<StudentVO>.Create(stu, pq.PageNumber ?? 1, pq.PageSize));
         }
+        
+        //增加一条新生的记录
+        [HttpPost("addOneStudentInfo")]
+        [ProducesResponseType(200)]
+        public IActionResult addOneStudentInfo(NewStudentQO student)
+        {
+            var newStu = _adminService.AddNewStudent(student);
+            if (newStu == null) return BadRequest(new {msg = "Number already exist"});
+            return Ok();
+        }
 
+        // ---------------------------------------------------------------------------------------
+        // ------------------------------------系统公告--------------------------------------------
+        // ---------------------------------------------------------------------------------------  
 
         //获取所有社团制度并分页
         [HttpPost("getSpecifications")]
-        [ProducesResponseType(typeof(PaginatedList<SpecVO>), 200)]
+        [ProducesResponseType(typeof(PaginatedList<SpecificationVO>), 200)]
         [ProducesResponseType(404)]
-        public ActionResult<PaginatedList<SpecVO>> GetSpec([FromBody] PageQO pq)
+        public ActionResult<PaginatedList<SpecificationVO>> GetSpecifications([FromBody] PageQO pq)
         {
             var spec = _adminService.GetSpec(pq.Query);
             if (spec == null) return NotFound();
-            return Ok(PaginatedList<SpecVO>.Create(spec, pq.PageNumber ?? 1, pq.PageSize));
+            return Ok(PaginatedList<SpecificationVO>.Create(spec, pq.PageNumber ?? 1, pq.PageSize));
         }
 
         //提交一条新的社团制度
         [HttpPost("addOneSpecification")]
         [ProducesResponseType(200)]
-        public IActionResult addOneSpec([FromBody] SpecQO ps)
+        public IActionResult AddOneSpecification([FromBody] SpecificationQO ps)
         {
             var userId = Utils.GetCurrentUserId(this.User);
             var spec = _adminService.AddSpec(ps, userId);
@@ -56,9 +73,9 @@ namespace ClubManager.Controllers
 
         //通过id获取一条社团制度
         [HttpPost("getOneSpecification/{id}")]
-        [ProducesResponseType(typeof(SpecVO), 200)]
+        [ProducesResponseType(typeof(SpecificationVO), 200)]
         [ProducesResponseType(404)]
-        public IActionResult GetSpecById(long id)
+        public IActionResult GetOneSpecification(long id)
         {
             var spec = _adminService.GetSpec(id);
             if (spec == null)
@@ -72,7 +89,7 @@ namespace ClubManager.Controllers
         //通过id修改一条社团制度
         [HttpPost("updateOneSpecification/{id}")]
         [ProducesResponseType(200)]
-        public IActionResult PutSpec([FromBody] SpecQO ps)
+        public IActionResult UpdateOneSpecification([FromBody] SpecificationQO ps)
         {
             var userId = Utils.GetCurrentUserId(this.User);
             _adminService.PutSpec(ps, ps.SpecificationId, userId);
@@ -83,23 +100,18 @@ namespace ClubManager.Controllers
         [HttpPost("deleteOneSpecification/{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteSpec(long id)
+        public IActionResult DeleteOneSpecification(long id)
         {
             var exist = _adminService.DeleteSpec(id);
             if (exist) return Ok();
             return NotFound();
         }
 
-        //增加一条新生的记录
-        [HttpPost("addOneStudentInfo")]
-        [ProducesResponseType(200)]
-        public IActionResult AddNewStudent(NewStuQO stu)
-        {
-            var newStu = _adminService.AddNewStudent(stu);
-            if (newStu == null) return BadRequest(new {msg = "Number already exist"});
-            return Ok();
-        }
+        // ---------------------------------------------------------------------------------------
+        // ------------------------------------赞助审核--------------------------------------------
+        // ---------------------------------------------------------------------------------------  
 
+        
         //获取所有赞助申请
         [HttpPost("getSponsorships")]
         [ProducesResponseType(404)]

@@ -1,6 +1,6 @@
 namespace ClubManager.QueryObjects
 {
-    public class NewStuQO
+    public class NewStudentQO
     {
         public string Number { get; set; }
         public string Name { get; set; }

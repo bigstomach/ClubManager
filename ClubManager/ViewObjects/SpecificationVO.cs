@@ -2,7 +2,7 @@ using System;
 
 namespace ClubManager.ViewObjects
 {
-    public class SpecVO
+    public class SpecificationVO
     {
         public long SpecificationId { get; set; }
         public string Name { get; set; }

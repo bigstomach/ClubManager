@@ -28,12 +28,15 @@ namespace ClubManager.Services
             return GetRelatedClub(userId).Name;
         }
 
-        //获取活动并分页
-        public IQueryable<ActivitiesVO> GetActs(long userId, string query)
+        //--------------------------------活动增删改查-----------------------------------
+
+        //获取活动列表
+        public IQueryable<ActivityVO> GetActs(long userId, string query)
         {
             var acts = from activity in _context.Activities
                 where activity.ClubId == GetRelatedClub(userId).ClubId
-                select new ActivitiesVO
+                orderby activity.ApplyDate descending
+                select new ActivityVO
                 {
                     ActivityId = activity.ActivityId,
                     Name = activity.Name,
@@ -55,59 +58,176 @@ namespace ClubManager.Services
             return acts;
         }
 
-        public Activities AddAct(ActQO aq, long userId)
-        {
-            var newAct = new Activities
-            {
-                Name = aq.Name,
-                Fund = aq.Fund,
-                Cost = aq.Cost,
-                Place = aq.Place,
-                Time = aq.Time,
-                ApplyDate = DateTime.Now,
-                Description = aq.Description,
-                ClubId = GetRelatedClub(userId).ClubId,
-                IsPublic = aq.IsPublic
-            };
-            
-            _context.Activities.Add(newAct);
-            _context.SaveChanges();
-            
-            return newAct;
-        }
-
-        public ActivitiesVO GetOneAct(long userId, long id)
+        //获取一条活动记录
+        public ActivityVO GetOneAct(long userId, long id)
         {
             var act = GetActs(userId, "").FirstOrDefault(a => a.ActivityId == id);
             return act;
         }
 
-        public bool UpdateAct(ActQO aq, long userId)
+        //增加一条活动记录
+        public void AddAct(ActivityQO actQuery, long userId)
+        {
+            var newAct = new Activities
+            {
+                Name = actQuery.Name,
+                Fund = actQuery.Fund,
+                Cost = actQuery.Cost,
+                Place = actQuery.Place,
+                Time = actQuery.Time,
+                ApplyDate = DateTime.Now,
+                Description = actQuery.Description,
+                ClubId = GetRelatedClub(userId).ClubId,
+                IsPublic = actQuery.IsPublic
+            };
+
+            _context.Activities.Add(newAct);
+            _context.SaveChanges();
+        }
+
+        //更新一条活动记录
+        public bool UpdateAct(ActivityQO actQuery, long userId)
         {
             var act = _context.Activities.FirstOrDefault(a =>
-                a.ClubId == GetRelatedClub(userId).ClubId && a.ActivityId == aq.ActivityId);
-            
+                a.ClubId == GetRelatedClub(userId).ClubId && a.ActivityId == actQuery.ActivityId);
+
             if (act == null)
                 return false;
-            
-            act.Name = aq.Name;
-            act.Fund = aq.Fund;
-            act.Cost = aq.Cost;
-            act.Place = aq.Place;
-            act.Description = aq.Description;
-            act.Time = aq.Time;
-            act.IsPublic = aq.IsPublic;
-            
+
+            act.Name = actQuery.Name;
+            act.Fund = actQuery.Fund;
+            act.Cost = actQuery.Cost;
+            act.Place = actQuery.Place;
+            act.Description = actQuery.Description;
+            act.Time = actQuery.Time;
+            act.IsPublic = actQuery.IsPublic;
+
             _context.SaveChanges();
             return true;
         }
 
+        //删除一条活动记录
         public bool DeleteAct(long id, long userId)
         {
             var act = _context.Activities.Find(id);
             if (act == null || act.ClubId != GetRelatedClub(userId).ClubId) return false;
-            
+
             _context.Activities.Remove(act);
+            _context.SaveChanges();
+            return true;
+        }
+
+        //--------------------------------公告增删改查-----------------------------------
+
+        //获取公告列表
+        public IQueryable<AnnouncementVO> GetAnnounces(long userId, string query)
+        {
+            var announces = from announcements in _context.Announcements
+                where announcements.ClubId == GetRelatedClub(userId).ClubId
+                orderby announcements.Time descending
+                select new AnnouncementVO
+                {
+                    AnnouncementId = announcements.AnnouncementId,
+                    Content = announcements.Content,
+                    Time = announcements.Time
+                };
+            if (!String.IsNullOrEmpty(query))
+            {
+                announces = announces.Where(a => a.Content.Contains(query));
+            }
+
+            return announces;
+        }
+
+        //获取一条公告记录
+        public AnnouncementVO GetOneAnnounce(long userId, long id)
+        {
+            var announce = GetAnnounces(userId, "").FirstOrDefault(a => a.AnnouncementId == id);
+            return announce;
+        }
+
+        //增加一条公告记录
+        public void AddAnnounce(AnnouncementQO announceQuery, long userId)
+        {
+            var newAnnounce = new Announcements
+            {
+                Content = announceQuery.Content,
+                ClubId = GetRelatedClub(userId).ClubId,
+                Time = DateTime.Now
+            };
+            _context.Announcements.Add(newAnnounce);
+            _context.SaveChanges();
+        }
+
+        //更新一条公告记录
+        public bool UpdateAnnounce(AnnouncementQO announceQuery, long userId)
+        {
+            var announce = _context.Announcements.FirstOrDefault(a =>
+                a.ClubId == GetRelatedClub(userId).ClubId && a.AnnouncementId == announceQuery.AnnouncementId);
+            if (announce == null) return false;
+            announce.Content = announceQuery.Content;
+            announce.Time = DateTime.Now;
+            _context.SaveChanges();
+            return true;
+        }
+
+        //删除一条公告记录
+        public bool DeleteAnnounce(long id, long userId)
+        {
+            var announce =
+                _context.Announcements.Single(a => a.AnnouncementId == id && a.ClubId == GetRelatedClub(userId).ClubId);
+            if (announce == null) return false;
+
+            _context.Announcements.Remove(announce);
+            _context.SaveChanges();
+            return true;
+        }
+
+        //--------------------------------成员删查-----------------------------------
+        //获取成员列表
+        public IQueryable<StudentVO> GetClubMem(long userId, string query)
+        {
+            var mems = from joinClub in _context.JoinClubs
+                join stu in _context.Students
+                    on joinClub.StudentId equals stu.StudentId
+                where joinClub.ClubId == GetRelatedClub(userId).ClubId && joinClub.Status == true
+                orderby stu.Number
+                select new StudentVO
+                {
+                    StudentId = stu.StudentId,
+                    Number = stu.Number,
+                    Name = stu.Name,
+                    Major = stu.Major,
+                    Grade = stu.Grade,
+                    Phone = stu.Phone
+                };
+            if (!String.IsNullOrEmpty(query))
+            {
+                mems = mems.Where(m => m.Name.Contains(query));
+            }
+
+            return mems;
+        }
+
+        //清理社团成员
+        public bool DeleteClubMem(long id, long userId)
+        {
+            var mem = _context.JoinClubs
+                .Single(jc => jc.StudentId == id && jc.ClubId == GetRelatedClub(userId).ClubId && jc.Status == true);
+            if (mem == null) return false;
+            _context.JoinClubs.Remove(mem);
+            _context.SaveChanges();
+            return true;
+        }
+
+        //社长换届
+        public bool ChangeManager(long id, long userId)
+        {
+            var club = GetRelatedClub(userId);
+            var mem = _context.JoinClubs
+                .Single(jc => jc.ClubId == club.ClubId && jc.StudentId == id && jc.Status == true);
+            if (mem == null) return false;
+            club.StudentId = id;
             _context.SaveChanges();
             return true;
         }
