@@ -25,6 +25,7 @@ namespace ClubManager.Services
         bool DeleteClubMem(long id, long userId);
         bool ChangeManager(long id, long userId);
 
-        void ApplySponsorship(SponsorshipQO sponsorshipQuery, long userId);
+        void Addonesponsorship(SponsorshipQO sponsorshipQuery, long userId);
+
     }
 }

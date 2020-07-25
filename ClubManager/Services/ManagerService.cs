@@ -233,14 +233,16 @@ namespace ClubManager.Services
         }
         //--------------------------------申请赞助-----------------------------------
         //申请赞助
-        public void ApplySponsorship(SponsorshipQO sponsorshipQuery, long userId)
+        public void Addonesponsorship(SponsorshipQO sponsorshipQuery, long userId)
         {
             var newSponsorship = new Sponsorships
             {
                 ApplyTime = DateTime.Now,
                 ClubId = GetRelatedClub(userId).ClubId,
                 Sponsor = sponsorshipQuery.Sponsor,
-                Amount = sponsorshipQuery.Amount
+                Amount = sponsorshipQuery.Amount,
+                Requirement = sponsorshipQuery.Requirement
+
             };
             _context.Sponsorships.Add(newSponsorship);
             _context.SaveChanges();

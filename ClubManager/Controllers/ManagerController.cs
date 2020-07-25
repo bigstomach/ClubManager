@@ -233,12 +233,12 @@ namespace ClubManager.Controllers
 
         //--------------------------------------申请赞助--------------------------------------------
         //申请赞助
-        [HttpPost("applySponsorship")]
+        [HttpPost("addonesponsorship")]
         [ProducesResponseType(200)]
-        public IActionResult ApplySponsorship([FromBody] SponsorshipQO aq)
+        public IActionResult Addonesponsorship([FromBody] SponsorshipQO aq)
         {
             var userId = Utils.GetCurrentUserId(this.User);
-            _managerService.ApplySponsorship(aq, userId);
+            _managerService.Addonesponsorship(aq, userId);
             return Ok();
         }
 
