@@ -24,5 +24,7 @@ namespace ClubManager.Services
         IQueryable<StudentVO> GetClubMem(long userId, string query);
         bool DeleteClubMem(long id, long userId);
         bool ChangeManager(long id, long userId);
+
+        void ApplySponsorship(SponsorshipQO sponsorshipQuery, long userId);
     }
 }

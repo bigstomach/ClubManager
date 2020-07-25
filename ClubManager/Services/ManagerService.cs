@@ -231,5 +231,22 @@ namespace ClubManager.Services
             _context.SaveChanges();
             return true;
         }
+        //--------------------------------申请赞助-----------------------------------
+        //申请赞助
+        public void ApplySponsorship(SponsorshipQO sponsorshipQuery, long userId)
+        {
+            var newSponsorship = new Sponsorships
+            {
+                ApplyTime = DateTime.Now,
+                ClubId = GetRelatedClub(userId).ClubId,
+                Sponsor = sponsorshipQuery.Sponsor,
+                Amount = sponsorshipQuery.Amount
+            };
+            _context.Sponsorships.Add(newSponsorship);
+            _context.SaveChanges();
+        }
+
+
+
     }
 }

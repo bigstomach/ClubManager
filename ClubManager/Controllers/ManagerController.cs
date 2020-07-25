@@ -229,7 +229,19 @@ namespace ClubManager.Controllers
             if (success) return Ok();
             return NotFound();
         }
-        
-        
+
+
+        //--------------------------------------申请赞助--------------------------------------------
+        //申请赞助
+        [HttpPost("applySponsorship")]
+        [ProducesResponseType(200)]
+        public IActionResult ApplySponsorship([FromBody] SponsorshipQO aq)
+        {
+            var userId = Utils.GetCurrentUserId(this.User);
+            _managerService.ApplySponsorship(aq, userId);
+            return Ok();
+        }
+
+
     }
 }
