@@ -1,6 +1,6 @@
 namespace ClubManager.ViewObjects
 {
-    public class StudentVO
+    public class MemberVO
     {
         public long StudentId { get; set; }
         public string Number { get; set; }
@@ -8,5 +8,6 @@ namespace ClubManager.ViewObjects
         public long? Grade { get; set; }
         public string Major { get; set; }
         public string Phone { get; set; }
+        public string Position { get; set; }
     }
 }

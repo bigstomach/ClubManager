@@ -4,6 +4,7 @@ using ClubManager.QueryObjects;
 using ClubManager.ViewObjects;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
+using Remotion.Linq.Parsing.Structure.IntermediateModel;
 
 namespace ClubManager.Services
 {
@@ -19,7 +20,7 @@ namespace ClubManager.Services
         //根据id返回社团
         private Clubs GetRelatedClub(long id)
         {
-            return _context.Clubs.FirstOrDefault(c => c.UserId == id);
+            return _context.Clubs.SingleOrDefault(c => c.UserId == id);
         }
 
         //获取社团名称
@@ -33,7 +34,7 @@ namespace ClubManager.Services
         //获取活动列表
         public IQueryable<ActivityVO> GetActs(long userId, string query)
         {
-            var acts = from activity in _context.Activities
+            var acts = (from activity in _context.Activities
                 where activity.ClubId == GetRelatedClub(userId).ClubId
                 orderby activity.ApplyDate descending
                 select new ActivityVO
@@ -49,7 +50,7 @@ namespace ClubManager.Services
                     Status = activity.Status,
                     IsPublic = activity.IsPublic,
                     Suggestion = activity.Suggestion
-                };
+                }).AsNoTracking();
             if (!String.IsNullOrEmpty(query))
             {
                 acts = acts.Where(a => a.Name.Contains(query));
@@ -61,7 +62,7 @@ namespace ClubManager.Services
         //获取一条活动记录
         public ActivityVO GetOneAct(long userId, long id)
         {
-            var act = GetActs(userId, "").FirstOrDefault(a => a.ActivityId == id);
+            var act = GetActs(userId, "").SingleOrDefault(a => a.ActivityId == id);
             return act;
         }
 
@@ -88,7 +89,7 @@ namespace ClubManager.Services
         //更新一条活动记录
         public bool UpdateAct(ActivityQO actQuery, long userId)
         {
-            var act = _context.Activities.FirstOrDefault(a =>
+            var act = _context.Activities.SingleOrDefault(a =>
                 a.ClubId == GetRelatedClub(userId).ClubId && a.ActivityId == actQuery.ActivityId);
 
             if (act == null)
@@ -122,18 +123,19 @@ namespace ClubManager.Services
         //获取公告列表
         public IQueryable<AnnouncementVO> GetAnnounces(long userId, string query)
         {
-            var announces = from announcements in _context.Announcements
+            var announces = (from announcements in _context.Announcements
                 where announcements.ClubId == GetRelatedClub(userId).ClubId
                 orderby announcements.Time descending
                 select new AnnouncementVO
                 {
                     AnnouncementId = announcements.AnnouncementId,
+                    Title = announcements.Title,
                     Content = announcements.Content,
                     Time = announcements.Time
-                };
+                }).AsNoTracking();
             if (!String.IsNullOrEmpty(query))
             {
-                announces = announces.Where(a => a.Content.Contains(query));
+                announces = announces.Where(a => a.Title.Contains(query));
             }
 
             return announces;
@@ -142,7 +144,7 @@ namespace ClubManager.Services
         //获取一条公告记录
         public AnnouncementVO GetOneAnnounce(long userId, long id)
         {
-            var announce = GetAnnounces(userId, "").FirstOrDefault(a => a.AnnouncementId == id);
+            var announce = GetAnnounces(userId, "").SingleOrDefault(a => a.AnnouncementId == id);
             return announce;
         }
 
@@ -153,7 +155,8 @@ namespace ClubManager.Services
             {
                 Content = announceQuery.Content,
                 ClubId = GetRelatedClub(userId).ClubId,
-                Time = DateTime.Now
+                Time = DateTime.Now,
+                Title = announceQuery.Title
             };
             _context.Announcements.Add(newAnnounce);
             _context.SaveChanges();
@@ -162,11 +165,11 @@ namespace ClubManager.Services
         //更新一条公告记录
         public bool UpdateAnnounce(AnnouncementQO announceQuery, long userId)
         {
-            var announce = _context.Announcements.FirstOrDefault(a =>
+            var announce = _context.Announcements.SingleOrDefault(a =>
                 a.ClubId == GetRelatedClub(userId).ClubId && a.AnnouncementId == announceQuery.AnnouncementId);
             if (announce == null) return false;
+            announce.Title = announceQuery.Title;
             announce.Content = announceQuery.Content;
-            announce.Time = DateTime.Now;
             _context.SaveChanges();
             return true;
         }
@@ -175,7 +178,8 @@ namespace ClubManager.Services
         public bool DeleteAnnounce(long id, long userId)
         {
             var announce =
-                _context.Announcements.Single(a => a.AnnouncementId == id && a.ClubId == GetRelatedClub(userId).ClubId);
+                _context.Announcements.SingleOrDefault(a =>
+                    a.AnnouncementId == id && a.ClubId == GetRelatedClub(userId).ClubId);
             if (announce == null) return false;
 
             _context.Announcements.Remove(announce);
@@ -185,14 +189,14 @@ namespace ClubManager.Services
 
         //--------------------------------成员删查-----------------------------------
         //获取成员列表
-        public IQueryable<StudentVO> GetClubMem(long userId, string query)
+        public IQueryable<MemberVO> GetClubMem(long userId, string query)
         {
-            var mems = from joinClub in _context.JoinClubs
+            var mems = (from joinClub in _context.JoinClubs
                 join stu in _context.Students
                     on joinClub.StudentId equals stu.StudentId
                 where joinClub.ClubId == GetRelatedClub(userId).ClubId && joinClub.Status == true
                 orderby stu.Number
-                select new StudentVO
+                select new MemberVO
                 {
                     StudentId = stu.StudentId,
                     Number = stu.Number,
@@ -200,7 +204,7 @@ namespace ClubManager.Services
                     Major = stu.Major,
                     Grade = stu.Grade,
                     Phone = stu.Phone
-                };
+                }).AsNoTracking();
             if (!String.IsNullOrEmpty(query))
             {
                 mems = mems.Where(m => m.Name.Contains(query));
@@ -209,31 +213,70 @@ namespace ClubManager.Services
             return mems;
         }
 
+        //获取一条成员信息
+        public MemberVO GetOneClubMem(long userId, long id)
+        {
+            var mem = GetClubMem(userId, "").SingleOrDefault(m => m.StudentId == id);
+            return mem;
+        }
+
         //清理社团成员
         public bool DeleteClubMem(long id, long userId)
         {
-            var mem = _context.JoinClubs
-                .Single(jc => jc.StudentId == id && jc.ClubId == GetRelatedClub(userId).ClubId && jc.Status == true);
+            var mem = _context.JoinClubs.SingleOrDefault(jc =>
+                    jc.StudentId == id && jc.ClubId == GetRelatedClub(userId).ClubId && jc.Status == true);
             if (mem == null) return false;
             _context.JoinClubs.Remove(mem);
             _context.SaveChanges();
             return true;
+        }
+        //--------------------------------换届管理-----------------------------------
+
+        //获取下届成员列表
+        public IQueryable<MemberVO> GetNextMem(long userId, string query)
+        {
+            var club = GetRelatedClub(userId);
+            var grade = _context.Students.Single(s => s.StudentId == club.StudentId).Grade;
+            var mems = (from joinClub in _context.JoinClubs
+                join stu in _context.Students
+                    on joinClub.StudentId equals stu.StudentId
+                where joinClub.ClubId == club.ClubId && joinClub.Status == true && stu.Grade == grade + 1
+                select new MemberVO
+                {
+                    StudentId = stu.StudentId,
+                    Number = stu.Number,
+                    Name = stu.Name,
+                    Major = stu.Major,
+                    Grade = stu.Grade,
+                    Phone = stu.Phone,
+                }).AsNoTracking();
+            if (!String.IsNullOrEmpty(query))
+            {
+                mems = mems.Where(m => m.Name.Contains(query));
+            }
+
+            return mems;
         }
 
         //社长换届
         public bool ChangeManager(long id, long userId)
         {
             var club = GetRelatedClub(userId);
-            var mem = _context.JoinClubs
-                .Single(jc => jc.ClubId == club.ClubId && jc.StudentId == id && jc.Status == true);
-            if (mem == null) return false;
+            var grade = _context.Students.Single(s => s.StudentId == club.StudentId).Grade;
+            var newLeaderGrade = (from joinClub in _context.JoinClubs
+                join stu in _context.Students
+                    on joinClub.StudentId equals stu.StudentId
+                where joinClub.ClubId == club.ClubId && joinClub.Status == true && stu.StudentId== id
+                select stu.Grade).SingleOrDefault();
+            if (newLeaderGrade == null || newLeaderGrade != grade + 1) return false;
             club.StudentId = id;
             _context.SaveChanges();
             return true;
         }
+
         //--------------------------------申请赞助-----------------------------------
         //申请赞助
-        public void Addonesponsorship(SponsorshipQO sponsorshipQuery, long userId)
+        public void AddOneSponsorship(SponsorshipQO sponsorshipQuery, long userId)
         {
             var newSponsorship = new Sponsorships
             {
@@ -242,13 +285,9 @@ namespace ClubManager.Services
                 Sponsor = sponsorshipQuery.Sponsor,
                 Amount = sponsorshipQuery.Amount,
                 Requirement = sponsorshipQuery.Requirement
-
             };
             _context.Sponsorships.Add(newSponsorship);
             _context.SaveChanges();
         }
-
-
-
     }
 }

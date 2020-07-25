@@ -31,7 +31,7 @@ namespace ClubManager.Controllers
         {
             var userId = Utils.GetCurrentUserId(this.User);
             var username = Utils.GetCurrentUsername(this.User);
-            var clubs = _studentService.SearchInClub(userId, pq.Query, pq.Status);
+            var clubs = _studentService.SearchInClub(userId, pq.Query);
             if (clubs == null) return NotFound();
             return Ok(PaginatedList<ClubVO>.Create(clubs, pq.PageNumber ?? 1, pq.PageSize));
         }
@@ -51,7 +51,7 @@ namespace ClubManager.Controllers
         [HttpPost("getClubDescription/{id}")]
         [ProducesResponseType(typeof(PaginatedList<ClubVO>), 200)]
         [ProducesResponseType(404)]
-        public IActionResult Getclub_description(long id)
+        public IActionResult GetClubDescription(long id)
         {
             var userId = Utils.GetCurrentUserId(this.User);
             var des = _studentService.GetClubDescription(id);

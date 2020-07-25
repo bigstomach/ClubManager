@@ -25,7 +25,16 @@ namespace ClubManager
         public virtual DbSet<Sponsorships> Sponsorships { get; set; }
         public virtual DbSet<Students> Students { get; set; }
         public virtual DbSet<Users> Users { get; set; }
-        
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseOracle("User ID=bigstomach;Password=bigstomach;Data Source=139.9.134.43:1521/ORCL;");
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
@@ -107,7 +116,7 @@ namespace ClubManager
 
             modelBuilder.Entity<Announcements>(entity =>
             {
-                entity.HasKey(e => new { e.ClubId, e.AnnouncementId })
+                entity.HasKey(e => new { e.AnnouncementId, e.ClubId })
                     .HasName("PK_Announce");
 
                 entity.HasIndex(e => new { e.AnnouncementId, e.ClubId })
@@ -121,6 +130,10 @@ namespace ClubManager
                     .HasColumnType("NVARCHAR2(2000)");
 
                 entity.Property(e => e.Time).HasColumnType("DATE");
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasColumnType("NVARCHAR2(2000)");
 
                 entity.HasOne(d => d.Club)
                     .WithMany(p => p.Announcements)
@@ -166,7 +179,7 @@ namespace ClubManager
 
             modelBuilder.Entity<JoinClubs>(entity =>
             {
-                entity.HasKey(e => new { e.ClubId, e.StudentId })
+                entity.HasKey(e => new { e.StudentId, e.ClubId })
                     .HasName("PK_StuClub");
 
                 entity.HasIndex(e => new { e.StudentId, e.ClubId })
@@ -176,10 +189,6 @@ namespace ClubManager
                 entity.Property(e => e.ApplyDate).HasColumnType("DATE");
 
                 entity.Property(e => e.Payed).HasColumnType("NUMBER(2)");
-
-                entity.Property(e => e.Position)
-                    .IsRequired()
-                    .HasColumnType("NVARCHAR2(2000)");
 
                 entity.Property(e => e.Status)
                     .IsRequired()
@@ -199,7 +208,7 @@ namespace ClubManager
 
             modelBuilder.Entity<ParticipateActivity>(entity =>
             {
-                entity.HasKey(e => new { e.StudentId, e.ActivityId });
+                entity.HasKey(e => new { e.ActivityId, e.StudentId });
 
                 entity.HasIndex(e => new { e.ActivityId, e.StudentId })
                     .HasName("PK_ParticipateActivity")
@@ -299,8 +308,6 @@ namespace ClubManager
 
                 entity.HasIndex(e => e.UserId)
                     .HasName("STU_USER_UQ");
-
-                entity.Property(e => e.Grade).HasColumnType("NUMBER(2)");
 
                 entity.Property(e => e.Major).HasColumnType("NVARCHAR2(2000)");
 
