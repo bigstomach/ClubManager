@@ -118,7 +118,9 @@ namespace ClubManager.Services
                     ApplyTime = s.ApplyTime,
                     Sponsor = s.Sponsor,
                     Amount = s.Amount,
-                    AdminName=s.Admin.Name,
+                    adminName=s.Admin.Name,
+                    Requirement=s.Requirement,
+                    Suggestion=s.Suggestion,
                     Status = s.Status
                 }).AsNoTracking();
             if (query=="unaudited")//如果是未被审核的
@@ -138,6 +140,47 @@ namespace ClubManager.Services
             return Spon;
         }
 
+        public SponsorshipVO GetSponsorshipDetails(long id)
+        {
+            var Sponsorship = _context.Sponsorships.Select(
+                s => new SponsorshipVO
+                {
+                    SponsorshipId = s.SponsorshipId,
+                    ClubName = s.Club.Name,
+                    ApplyTime = s.ApplyTime,
+                    Sponsor = s.Sponsor,
+                    Amount = s.Amount,
+                    adminName=s.Admin.Name,
+                    Requirement = s.Requirement,
+                    Suggestion = s.Suggestion,
+                    Status = s.Status
+                }).AsNoTracking().FirstOrDefault(s => s.SponsorshipId == id);
+            return Sponsorship;
+        }
+
+        public bool UpdateSuggestion(SponsorshipSuggestionQO newsuggestion,long userId)
+        {
+            long SponsorshipId = newsuggestion.SponsorshipId;
+            var Sponsorship = _context.Sponsorships.Find(SponsorshipId);
+            if (Sponsorship == null) return false;
+            _context.Sponsorships.Attach(Sponsorship);//仅修改某个属性中的元素值
+            Sponsorship.Suggestion = newsuggestion.Suggestion;
+            Sponsorship.AdminId = userId;
+            _context.SaveChanges();
+            return true;
+        }
+
+        public bool UpdateStatus(SponsorshipStatusQO newStatus,long UserId)
+        {
+            long SponsorshipId = newStatus.SponsorshipId;
+            var Sponsorship = _context.Sponsorships.Find(SponsorshipId);
+            if (Sponsorship == null) return false;
+            _context.Sponsorships.Attach(Sponsorship);
+            Sponsorship.Status = newStatus.Status;
+            Sponsorship.AdminId = UserId;
+            _context.SaveChanges();
+            return true;
+        }
 
     }
 }

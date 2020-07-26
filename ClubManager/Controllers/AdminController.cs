@@ -127,7 +127,39 @@ namespace ClubManager.Controllers
         }
 
         //根据赞助id获取赞助详情
-        //[HttpPost("getSponsorship/{id}")]
+        [HttpPost("getSponsorshipDetails/{id}")]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(typeof(SponsorshipVO),200)]
+        public IActionResult GetSponsorshipDetails(long id)
+        {
+            var Sponsorship = _adminService.GetSponsorshipDetails(id);
+            if (Sponsorship == null) return NotFound();
+            else return Ok(Sponsorship);
+        }
+
         //管理员根据赞助id批复赞助
+        [HttpPost("updateSuggestion")]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(200)]
+        public IActionResult UpdateSuggestion(SponsorshipSuggestionQO newsuggestion)
+        {
+            var userId = Utils.GetCurrentUserId(this.User);
+            var exist = _adminService.UpdateSuggestion(newsuggestion,userId);
+            if (exist) return Ok();
+            else return NotFound();
+        }
+
+        [HttpPost("updateStatus")]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public IActionResult UpdateStatus(SponsorshipStatusQO newStatus)
+        {
+            if (newStatus.Status > 2 || newStatus.Status <= 0) return BadRequest();//只能修改为审核通过或者未通过，不能修改为待审核
+            var userId = Utils.GetCurrentUserId(this.User);
+            var exist = _adminService.UpdateStatus(newStatus, userId);
+            if (exist) return Ok();
+            else return NotFound();
+        }
     }
 }

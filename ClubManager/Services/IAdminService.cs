@@ -14,5 +14,8 @@ namespace ClubManager.Services
         bool DeleteSpec(long id);
         Students AddNewStudent(NewStudentQO student);
         IQueryable<SponsorshipVO> GetSponsorship(string query);
+        SponsorshipVO GetSponsorshipDetails(long id);
+        bool UpdateSuggestion(SponsorshipSuggestionQO newsuggestion, long userId);
+        bool UpdateStatus(SponsorshipStatusQO newStatus, long UserId);
     }
 }
