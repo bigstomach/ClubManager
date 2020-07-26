@@ -120,10 +120,14 @@ namespace ClubManager.Controllers
         public ActionResult<PaginatedList<SponsorshipVO>> GetSponsorships([FromBody] PageQO SponsorshipPage)
         {
             if (SponsorshipPage.Query != "unaudited" && SponsorshipPage.Query != "failed" && SponsorshipPage.Query != "pass" && SponsorshipPage.Query != "all")
-                return BadRequest();
+                return BadRequest();//申请的参数内容有误
             var Sponsorships = _adminService.GetSponsorship(SponsorshipPage.Query);
             if (Sponsorships == null) return NotFound();
             else return Ok(PaginatedList<SponsorshipVO>.Create(Sponsorships, SponsorshipPage.PageNumber ?? 1, SponsorshipPage.PageSize));
         }
+
+        //根据赞助id获取赞助详情
+        //[HttpPost("getSponsorship/{id}")]
+        //管理员根据赞助id批复赞助
     }
 }

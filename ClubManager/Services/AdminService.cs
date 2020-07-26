@@ -121,21 +121,23 @@ namespace ClubManager.Services
                     AdminName=s.Admin.Name,
                     Status = s.Status
                 }).AsNoTracking();
-            if (query=="unaudited")//���Ҵ���˵�����
+            if (query=="unaudited")//如果是未被审核的
             {
                 Spon = Spon.Where(s => s.Status == 0);
             }
-            else if (query=="failed")//�������δͨ��������
+            else if (query=="failed")//如果是审核未通过
             {
                 Spon = Spon.Where(s => s.Status == 2);
             }
-            else if (query=="pass")//���������ͨ��������
+            else if (query=="pass")//如果是审核通过的
             {
                 Spon = Spon.Where(s => s.Status == 1);
             }
-            //��������������ֱ�ӷ�������ֵ
+            //如果是full表示都显示，不进行筛选
 
             return Spon;
         }
+
+
     }
 }
