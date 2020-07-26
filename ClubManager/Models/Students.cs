@@ -16,7 +16,7 @@ namespace ClubManager
         public string Number { get; set; }
         public long? UserId { get; set; }
         public string Name { get; set; }
-        public byte? Grade { get; set; }
+        public long? Grade { get; set; }
         public string Major { get; set; }
         public string Phone { get; set; }
 

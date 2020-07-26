@@ -21,8 +21,12 @@ namespace ClubManager.Services
         bool UpdateAnnounce(AnnouncementQO announceQuery, long userId);
         bool DeleteAnnounce(long id, long userId);
         //成员管理
-        IQueryable<StudentVO> GetClubMem(long userId, string query);
+        IQueryable<MemberVO> GetClubMem(long userId, string query);
+        MemberVO GetOneClubMem(long userId, long id);
         bool DeleteClubMem(long id, long userId);
+        IQueryable<MemberVO> GetNextMem(long userId, string query);
         bool ChangeManager(long id, long userId);
+        void AddOneSponsorship(SponsorshipQO sponsorshipQuery, long userId);
+
     }
 }

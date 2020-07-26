@@ -9,6 +9,7 @@ namespace ClubManager
         public long ClubId { get; set; }
         public string Content { get; set; }
         public DateTime Time { get; set; }
+        public string Title { get; set; }
 
         public virtual Clubs Club { get; set; }
     }

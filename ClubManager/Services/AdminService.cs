@@ -46,7 +46,7 @@ namespace ClubManager.Services
                     Name = s.Name,
                     Content = s.Content,
                     Date = s.Date
-                }).FirstOrDefault(s => s.SpecificationId == id);
+                }).AsNoTracking().FirstOrDefault(s => s.SpecificationId == id);
             return spec;
         }
 

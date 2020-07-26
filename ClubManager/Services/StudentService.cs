@@ -13,7 +13,7 @@ namespace ClubManager.Services
         {
             _context = context;
         }
-
+        
          //根据社团id 返回社团
         private Clubs GetRelatedClub(long id)
         {
@@ -21,9 +21,9 @@ namespace ClubManager.Services
         }
 
         //根据社团id 获取社团简介
-        public string GetClubDescription(long ClubId)
+        public string GetClubDescription(long clubId)
         {
-            return GetRelatedClub(ClubId).Description;
+            return GetRelatedClub(clubId).Description;
         }
         
         //返回所有社团
@@ -47,12 +47,12 @@ namespace ClubManager.Services
           }
 
         //返回已加入社团
-        public IQueryable<ClubVO> SearchInClub(long id, string query, bool status)
+        public IQueryable<ClubVO> SearchInClub(long id, string query)
         {
-            var clubs = from stu in _context.Set<Students>()
-                join joinclub in _context.Set<JoinClubs>() on stu equals joinclub.Student
-                join club in _context.Set<Clubs>() on joinclub.Club equals club
-                where stu.UserId == id && joinclub.Status == status
+            var clubs = from stu in _context.Students
+                join joinClub in _context.JoinClubs on stu equals joinClub.Student
+                join club in _context.Clubs on joinClub.Club equals club
+                where stu.UserId == id && joinClub.Status == true
                 select new ClubVO
                 {
                     ClubId = club.ClubId,

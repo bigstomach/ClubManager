@@ -9,7 +9,6 @@ namespace ClubManager
         public long ClubId { get; set; }
         public bool? Status { get; set; }
         public DateTime ApplyDate { get; set; }
-        public string Position { get; set; }
         public byte Payed { get; set; }
 
         public virtual Clubs Club { get; set; }

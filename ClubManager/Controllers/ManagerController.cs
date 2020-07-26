@@ -134,6 +134,7 @@ namespace ClubManager.Controllers
         //根据id获取一条公告
         [HttpPost("getOneAnnouncement/{id}")]
         [ProducesResponseType(typeof(AnnouncementVO),200)]
+        [ProducesResponseType(404)]
         public IActionResult GetOneAnnouncement(long id)
         {
             var userId = Utils.GetCurrentUserId(this.User);
@@ -192,16 +193,45 @@ namespace ClubManager.Controllers
         
         //获取成员列表并分页
         [HttpPost("getClubMembers")]
-        [ProducesResponseType(typeof(PaginatedList<StudentVO>), 200)]
+        [ProducesResponseType(typeof(PaginatedList<MemberVO>), 200)]
         [ProducesResponseType(404)]
         public IActionResult GetClubMembers([FromBody] PageQO pq)
         {
             var userId = Utils.GetCurrentUserId(this.User);
             var mems = _managerService.GetClubMem(userId, pq.Query);
             if (mems == null) return NotFound();
-            return Ok(PaginatedList<StudentVO>.Create(mems, pq.PageNumber ?? 1, pq.PageSize));
+            return Ok(PaginatedList<MemberVO>.Create(mems, pq.PageNumber ?? 1, pq.PageSize));
         }
         
+        //获取下届成员列表并分页
+        [HttpPost("getNextMembers")]
+        [ProducesResponseType(typeof(PaginatedList<MemberVO>), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetNextMembers([FromBody]PageQO pq)
+        {
+            var userId = Utils.GetCurrentUserId(this.User);
+            var mems = _managerService.GetNextMem(userId, pq.Query);
+            if (mems == null) return NotFound();
+            return Ok(PaginatedList<MemberVO>.Create(mems, pq.PageNumber ?? 1, pq.PageSize));
+        }
+        
+        
+        //根据id获取成员信息
+        [HttpPost("getOneClubMember/{id}")]
+        [ProducesResponseType(typeof(MemberVO), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetOneClubMember(long id)
+        {
+            var userId = Utils.GetCurrentUserId(this.User);
+            var mem = _managerService.GetOneClubMem(userId, id);
+            if (mem == null)
+            {
+                return NotFound();
+            }
+            return Ok(mem);
+        }
+
+
         //--------------------------------------成员删除--------------------------------------------
         
         //清理社团成员
@@ -215,6 +245,7 @@ namespace ClubManager.Controllers
             if (exist) return Ok();
             return NotFound();
         }
+
         
         //--------------------------------------社团换届--------------------------------------------
         
@@ -229,7 +260,19 @@ namespace ClubManager.Controllers
             if (success) return Ok();
             return NotFound();
         }
-        
-        
+
+
+        //--------------------------------------申请赞助--------------------------------------------
+        //申请赞助
+        [HttpPost("addOneSponsorship")]
+        [ProducesResponseType(200)]
+        public IActionResult AddOneSponsorship([FromBody] SponsorshipQO aq)
+        {
+            var userId = Utils.GetCurrentUserId(this.User);
+            _managerService.AddOneSponsorship(aq, userId);
+            return Ok();
+        }
+
+
     }
 }
