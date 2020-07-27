@@ -7,7 +7,7 @@ namespace ClubManager.QueryObjects
 {
     public class SponsorshipSuggestionQO
     {
-        public long SponsorshipId { get; set; }
-        public string Suggestion { get; set; }
+        public long sponsorshipId { get; set; }
+        public string suggestion { get; set; }
     }
 }
