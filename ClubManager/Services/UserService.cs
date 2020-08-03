@@ -6,8 +6,6 @@ using System.Security.Claims;
 using System.Text;
 using ClubManager.QueryObjects;
 using ClubManager.Helpers;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -30,9 +28,7 @@ namespace ClubManager.Services
             var password = log.Password;
 
             var user = (from u in _context.Users
-                where (u.UserName == username ||
-                       (u.Students.FirstOrDefault() != null && u.Students.FirstOrDefault().Number == username)) &&
-                      u.Password == password
+                where (u.UserName == username || u.Students.Number.ToString() == username) && u.Password == password
                 select u).FirstOrDefault();
 
             if (user == null)
@@ -67,28 +63,31 @@ namespace ClubManager.Services
             var number = reg.Number;
             var password = reg.Password;
             var username = reg.Username;
-            var stu = (from s in _context.Students
-                where s.Number == number
-                select s).FirstOrDefault();
+            var stu = _context.StudentMeta.FirstOrDefault(s=>s.Number== number);
             if (stu == null)
             {
-                throw new InvalidCastException("invalid ID");
+                throw new InvalidCastException("学号不存在");
             }
 
-            if (stu.UserId != null)
+            var studentId = _context.Students.FirstOrDefault(s=>s.Number== number);
+
+            if (studentId != null)
             {
-                throw new InvalidCastException("already registered");
+                throw new InvalidCastException("此学号已注册");
             }
 
-            var user = _context.Users.SingleOrDefault(u => u.UserName == username);
-            if (user != null)
+            var name = _context.Users.FirstOrDefault(u => u.UserName == username);
+            if (name != null)
             {
-                throw new InvalidCastException("Username already exists");
+                throw new InvalidCastException("此用户名已存在");
             }
 
             var newUser = new Users {UserName = username, Password = password, UserType = 0};
-            stu.User = newUser;
             _context.Users.Add(newUser);
+            _context.SaveChanges();
+            
+            var newStudent = new Students {StudentId =_context.Users.First(u=>u.UserName==username).UserId,Number = number};
+            _context.Students.Add(newStudent);
             _context.SaveChanges();
         }
     }

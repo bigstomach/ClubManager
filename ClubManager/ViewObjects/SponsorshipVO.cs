@@ -9,7 +9,7 @@ namespace ClubManager.ViewObjects
     {
         public long SponsorshipId { get; set; }
         public string ClubName { get; set; }
-        public DateTime ApplyTime { get; set; }
+        public DateTime ApplyDate { get; set; }
         public string Sponsor { get; set; }
         public decimal Amount { get; set; }
         public string Requirement { get; set; }

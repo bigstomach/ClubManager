@@ -30,20 +30,16 @@ namespace ClubManager.Controllers
         public IActionResult InClub([FromBody] PageQO pq)
         {
             var userId = Utils.GetCurrentUserId(this.User);
-            var username = Utils.GetCurrentUsername(this.User);
             var clubs = _studentService.SearchInClub(userId, pq.Query);
-            if (clubs == null) return NotFound();
             return Ok(PaginatedList<ClubVO>.Create(clubs, pq.PageNumber ?? 1, pq.PageSize));
         }
         
         //获取全部社团信息并分页
         [HttpPost("getClubInfo")]
         [ProducesResponseType(typeof(PaginatedList<ClubVO>), 200)]
-        [ProducesResponseType(404)]
         public ActionResult<PaginatedList<ClubVO>> GetClubInfo([FromBody] PageQO pq)
         {
             var clubs = _studentService.GetClubInfo(pq.Query);
-            if (clubs == null) return NotFound();
             return Ok(PaginatedList<ClubVO>.Create(clubs, pq.PageNumber ?? 1, pq.PageSize));
         }
         

@@ -32,8 +32,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(typeof(NameVO), 200)]
         public IActionResult GetClubName()
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            return Ok(new NameVO {Name = _managerService.GetClubName(userId)});
+            var clubId = Utils.GetCurrentUserId(this.User);
+            return Ok(new NameVO {Name = _managerService.GetClubName(clubId)});
         }
 
         // ---------------------------------------------------------------------------------------
@@ -47,12 +47,10 @@ namespace ClubManager.Controllers
         //获取活动列表并分页
         [HttpPost("getActivities")]
         [ProducesResponseType(typeof(PaginatedList<ActivityVO>), 200)]
-        [ProducesResponseType(404)]
         public IActionResult GetActivities([FromBody] PageQO pq)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            var acts = _managerService.GetActs(userId, pq.Query);
-            if (acts == null) return NotFound();
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var acts = _managerService.GetActs(clubId, pq.Query);
             return Ok(PaginatedList<ActivityVO>.Create(acts, pq.PageNumber ?? 1, pq.PageSize));
         }
         
@@ -62,8 +60,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetOneActivity(long id)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            var act = _managerService.GetOneAct(userId, id);
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var act = _managerService.GetOneAct(clubId, id);
             if (act == null)
             {
                 return NotFound();
@@ -78,8 +76,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(200)]
         public IActionResult AddOneActivity([FromBody] ActivityQO aq)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            _managerService.AddAct(aq, userId);
+            var clubId = Utils.GetCurrentUserId(this.User);
+            _managerService.AddAct(clubId,aq);
             return Ok();
         }
 
@@ -90,8 +88,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateOneActivity([FromBody] ActivityQO aq)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            bool success = _managerService.UpdateAct(aq, userId);
+            var clubId = Utils.GetCurrentUserId(this.User);
+            bool success = _managerService.UpdateAct(clubId,aq);
             if (success) return Ok();
             return NotFound();
         }
@@ -103,8 +101,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(404)]
         public IActionResult DeleteOneActivity(long id)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            var exist = _managerService.DeleteAct(id, userId);
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var exist = _managerService.DeleteAct(clubId,id);
             if (exist) return Ok();
             return NotFound();
         }
@@ -122,12 +120,10 @@ namespace ClubManager.Controllers
         //获取公告列表并分页
         [HttpPost("getAnnouncements")]
         [ProducesResponseType(typeof(PaginatedList<AnnouncementVO>), 200)]
-        [ProducesResponseType(404)]
         public IActionResult GetAnnouncements([FromBody] PageQO pq)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            var announces = _managerService.GetAnnounces(userId, pq.Query);
-            if ( announces== null) return NotFound();
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var announces = _managerService.GetAnnounces(clubId, pq.Query);
             return Ok(PaginatedList<AnnouncementVO>.Create(announces, pq.PageNumber ?? 1, pq.PageSize));
         }
         
@@ -137,8 +133,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetOneAnnouncement(long id)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            var announce = _managerService.GetOneAnnounce(userId, id);
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var announce = _managerService.GetOneAnnounce(clubId, id);
             if (announce == null)
             {
                 return NotFound();
@@ -152,8 +148,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(200)]
         public IActionResult AddOneAnnouncement([FromBody] AnnouncementQO aq)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            _managerService.AddAnnounce(aq, userId);
+            var clubId = Utils.GetCurrentUserId(this.User);
+            _managerService.AddAnnounce(clubId,aq);
             return Ok();
         }
         
@@ -165,8 +161,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateOneAnnouncement([FromBody] AnnouncementQO aq)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            var success = _managerService.UpdateAnnounce(aq, userId);
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var success = _managerService.UpdateAnnounce(clubId,aq);
             if (success) return Ok();
             return NotFound();
         }
@@ -178,8 +174,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(404)]
         public IActionResult deleteOneAnnouncement(long id)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            var exist = _managerService.DeleteAnnounce(id, userId);
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var exist = _managerService.DeleteAnnounce(clubId,id);
             if (exist) return Ok();
             return NotFound();
         }
@@ -194,25 +190,21 @@ namespace ClubManager.Controllers
         //获取成员列表并分页
         [HttpPost("getClubMembers")]
         [ProducesResponseType(typeof(PaginatedList<MemberVO>), 200)]
-        [ProducesResponseType(404)]
         public IActionResult GetClubMembers([FromBody] PageQO pq)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            var mems = _managerService.GetClubMem(userId, pq.Query);
-            if (mems == null) return NotFound();
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var mems = _managerService.GetClubMem(clubId, pq.Query);
             return Ok(PaginatedList<MemberVO>.Create(mems, pq.PageNumber ?? 1, pq.PageSize));
         }
         
-        //获取下届成员列表并分页
-        [HttpPost("getNextMembers")]
+        //获取除社长外成员列表并分页
+        [HttpPost("getCandidates")]
         [ProducesResponseType(typeof(PaginatedList<MemberVO>), 200)]
-        [ProducesResponseType(404)]
-        public IActionResult GetNextMembers([FromBody]PageQO pq)
+        public IActionResult GetCandidates([FromBody]PageQO pq)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            var mems = _managerService.GetNextMem(userId, pq.Query);
-            if (mems == null) return NotFound();
-            return Ok(PaginatedList<MemberVO>.Create(mems, pq.PageNumber ?? 1, pq.PageSize));
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var candidates = _managerService.GetCandidates(clubId, pq.Query);
+            return Ok(PaginatedList<MemberVO>.Create(candidates, pq.PageNumber ?? 1, pq.PageSize));
         }
         
         
@@ -222,8 +214,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetOneClubMember(long id)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            var mem = _managerService.GetOneClubMem(userId, id);
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var mem = _managerService.GetOneClubMem(clubId, id);
             if (mem == null)
             {
                 return NotFound();
@@ -240,8 +232,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(404)]
         public IActionResult DeleteClubMember(long id)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            var exist = _managerService.DeleteClubMem(id, userId);
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var exist = _managerService.DeleteClubMem( clubId,id);
             if (exist) return Ok();
             return NotFound();
         }
@@ -255,10 +247,20 @@ namespace ClubManager.Controllers
         [ProducesResponseType(404)]
         public IActionResult ChangeManager(long id)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            var success = _managerService.ChangeManager(id, userId);
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var success = _managerService.ChangeManager(clubId,id);
             if (success) return Ok();
             return NotFound();
+        }
+        
+        //历届社长查看
+        [HttpPost("getManagers")]
+        [ProducesResponseType((200))]
+        public IActionResult GetManagers([FromBody] PageQO pq)
+        {
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var managers = _managerService.GetManagers(clubId, pq.Query);
+            return Ok(PaginatedList<ManagerVO>.Create(managers, pq.PageNumber ?? 1, pq.PageSize));
         }
 
 
@@ -268,8 +270,8 @@ namespace ClubManager.Controllers
         [ProducesResponseType(200)]
         public IActionResult AddOneSponsorship([FromBody] SponsorshipQO aq)
         {
-            var userId = Utils.GetCurrentUserId(this.User);
-            _managerService.AddOneSponsorship(aq, userId);
+            var clubId = Utils.GetCurrentUserId(this.User);
+            _managerService.AddOneSponsorship(clubId,aq);
             return Ok();
         }
 

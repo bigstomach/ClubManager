@@ -89,6 +89,39 @@ namespace ClubManager
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                //Bearer 的scheme定义
+                var securityScheme = new OpenApiSecurityScheme()
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\". Swagger调试直接粘贴token即可",
+                    Name = "Authorization",
+                    //参数添加在头部
+                    In = ParameterLocation.Header,
+                    //使用Authorize头部
+                    Type = SecuritySchemeType.Http,
+                    //内容为以 bearer开头
+                    Scheme = "bearer",
+                    BearerFormat = "JWT"
+                };
+
+                //把所有方法配置为增加bearer头部信息
+                var securityRequirement = new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "bearerAuth"
+                            }
+                        },
+                        new string[] {}
+                    }
+                };
+
+                //注册到swagger中
+                c.AddSecurityDefinition("bearerAuth", securityScheme);
+                c.AddSecurityRequirement(securityRequirement);
             });
         }
 

@@ -7,26 +7,27 @@ namespace ClubManager.Services
     public interface IManagerService
     {
         //获取社团名称
-        string GetClubName(long userId);
+        string GetClubName(long clubId);
         //活动管理
-        IQueryable<ActivityVO> GetActs(long userId, string query);
-        ActivityVO GetOneAct(long userId, long id);
-        void AddAct(ActivityQO actQuery, long userId);
-        bool UpdateAct(ActivityQO actQuery, long userId);
-        bool DeleteAct(long id, long userId);
+        IQueryable<ActivityVO> GetActs(long clubId, string query);
+        ActivityVO GetOneAct(long clubId, long id);
+        void AddAct(long clubId,ActivityQO actQO);
+        bool UpdateAct(long clubId,ActivityQO actQO);
+        bool DeleteAct(long clubId,long id);
         //公告管理
-        IQueryable<AnnouncementVO> GetAnnounces(long userId, string query);
-        AnnouncementVO GetOneAnnounce(long userId, long id);
-        void AddAnnounce(AnnouncementQO announceQuery, long userId);
-        bool UpdateAnnounce(AnnouncementQO announceQuery, long userId);
-        bool DeleteAnnounce(long id, long userId);
+        IQueryable<AnnouncementVO> GetAnnounces(long clubId, string query);
+        AnnouncementVO GetOneAnnounce(long clubId, long id);
+        void AddAnnounce(long clubId,AnnouncementQO announceQO);
+        bool UpdateAnnounce(long clubId,AnnouncementQO announceQO);
+        bool DeleteAnnounce(long clubId,long id);
         //成员管理
-        IQueryable<MemberVO> GetClubMem(long userId, string query);
-        MemberVO GetOneClubMem(long userId, long id);
-        bool DeleteClubMem(long id, long userId);
-        IQueryable<MemberVO> GetNextMem(long userId, string query);
-        bool ChangeManager(long id, long userId);
-        void AddOneSponsorship(SponsorshipQO sponsorshipQuery, long userId);
+        IQueryable<MemberVO> GetClubMem(long clubId, string query);
+        MemberVO GetOneClubMem(long clubId, long id);
+        bool DeleteClubMem(long clubId,long id);
+        IQueryable<MemberVO> GetCandidates(long clubId, string query);
+        bool ChangeManager(long clubId,long id);
+        IQueryable<ManagerVO> GetManagers(long clubId, string query);
+        void AddOneSponsorship(long clubId,SponsorshipQO sponsorshipQO);
 
     }
 }

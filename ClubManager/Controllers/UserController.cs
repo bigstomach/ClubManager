@@ -29,11 +29,11 @@ namespace ClubManager.Controllers
         [AllowAnonymous]
         [HttpPost("login")]
         [ProducesResponseType(typeof(AuthUser), 200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public IActionResult Login([FromBody] LoginQO log)
         {
             var user = _userService.Authenticate(log);
-            if (user == null) return BadRequest(new {msg = "invalid name and password"});
+            if (user == null) return NotFound(new {msg = "用户名或密码错误"});
             return Ok(user);
         }
 
@@ -41,7 +41,7 @@ namespace ClubManager.Controllers
         [AllowAnonymous]
         [HttpPost("register")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public IActionResult Register([FromBody] RegisterQO reg)
         {
             try
@@ -50,7 +50,7 @@ namespace ClubManager.Controllers
             }
             catch (InvalidCastException e)
             {
-                return BadRequest(new {msg = e.Message});
+                return NotFound(new {msg = e.Message});
             }
 
             return Ok(new {msg = "success"});

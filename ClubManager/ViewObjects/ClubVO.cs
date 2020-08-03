@@ -9,6 +9,6 @@ namespace ClubManager.ViewObjects
         public string Description { get; set; }
         public DateTime EstablishmentDate { get; set; }
         public string PresidentName { get; set; }
-        public string Type { get; set; }
+        public int Type { get; set; }
     }
 }
