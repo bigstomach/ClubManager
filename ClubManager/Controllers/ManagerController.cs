@@ -37,13 +37,24 @@ namespace ClubManager.Controllers
         }
 
         // ---------------------------------------------------------------------------------------
+        // ------------------------------------社团信息修改-----------------------------------------
+        [HttpPost("updateClubInfo")]
+        [ProducesResponseType(typeof(NameVO), 200)]
+        public IActionResult UpdateClubInfo([FromBody] ClubQO aq)
+        {
+            var clubId = Utils.GetCurrentUserId(this.User);
+             _managerService.UpdateClubInfo(clubId, aq);
+            return Ok();
+        }
+
+        // ---------------------------------------------------------------------------------------
         // ------------------------------------活动管理--------------------------------------------
         // ---------------------------------------------------------------------------------------    
-        
-        
-        
+
+
+
         //-------------------------------------活动查询--------------------------------------------
-        
+
         //获取活动列表并分页
         [HttpPost("getActivities")]
         [ProducesResponseType(typeof(PaginatedList<ActivityVO>), 200)]

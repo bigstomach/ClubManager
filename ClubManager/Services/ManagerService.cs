@@ -26,6 +26,16 @@ namespace ClubManager.Services
             return _context.Clubs.Find(clubId).Name;
         }
 
+        //--------------------------------社团信息修改-----------------------------------
+        public bool UpdateClubInfo(long clubId, ClubQO ClQO)
+        {
+            _context.Clubs.Find(clubId).Name = ClQO.Name;
+            _context.Clubs.Find(clubId).Description = ClQO.Description;
+            _context.Clubs.Find(clubId).Type = ClQO.Type;
+            _context.SaveChanges();
+            return true;
+        }
+
         //--------------------------------活动增删改查-----------------------------------
 
         //获取活动列表
@@ -276,7 +286,8 @@ namespace ClubManager.Services
                 ClubId = clubId,
                 Sponsor = sponsorshipQO.Sponsor,
                 Amount = sponsorshipQO.Amount,
-                Requirement = sponsorshipQO.Requirement
+                Requirement = sponsorshipQO.Requirement,
+                AdminId=null
             };
             _context.Sponsorships.Add(newSponsorship);
             _context.SaveChanges();

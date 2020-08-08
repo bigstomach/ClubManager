@@ -28,6 +28,7 @@ namespace ClubManager.Services
         bool ChangeManager(long clubId,long id);
         IQueryable<ManagerVO> GetManagers(long clubId, string query);
         void AddOneSponsorship(long clubId,SponsorshipQO sponsorshipQO);
+        bool UpdateClubInfo(long clubId, ClubQO ClQO);
 
     }
 }
