@@ -8,8 +8,8 @@ namespace ClubManager
         public Clubs()
         {
             Activities = new HashSet<Activities>();
-            Announcements = new HashSet<Announcements>();
-            JoinClubs = new HashSet<JoinClubs>();
+            JoinClub = new HashSet<JoinClub>();
+            Managers = new HashSet<Managers>();
             Sponsorships = new HashSet<Sponsorships>();
         }
 
@@ -17,15 +17,12 @@ namespace ClubManager
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime EstablishmentDate { get; set; }
-        public long? StudentId { get; set; }
-        public long UserId { get; set; }
-        public string Type { get; set; }
+        public int Type { get; set; }
 
-        public virtual Students Student { get; set; }
-        public virtual Users User { get; set; }
+        public virtual Users Club { get; set; }
         public virtual ICollection<Activities> Activities { get; set; }
-        public virtual ICollection<Announcements> Announcements { get; set; }
-        public virtual ICollection<JoinClubs> JoinClubs { get; set; }
+        public virtual ICollection<JoinClub> JoinClub { get; set; }
+        public virtual ICollection<Managers> Managers { get; set; }
         public virtual ICollection<Sponsorships> Sponsorships { get; set; }
     }
 }

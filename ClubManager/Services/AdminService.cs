@@ -16,17 +16,16 @@ namespace ClubManager.Services
             _context = context;
         }
 
-        public IQueryable<StudentVO> GetStudentInfo(string query)
+        public IQueryable<StudentMetaVO> GetStudentInfo(string query)
         {
-            var stu = _context.Students
-                .Select(s => new StudentVO
+            var stu = _context.StudentMeta
+                .Select(s => new StudentMetaVO
                 {
+                    Number = s.Number,
+                    Name = s.Name,
                     Grade = s.Grade,
                     Major = s.Major,
-                    Name = s.Name,
-                    Number = s.Number,
-                    Phone = s.Phone,
-                    StudentId = s.StudentId
+                    Status = s.Status
                 }).AsNoTracking();
             if (!String.IsNullOrEmpty(query))
             {
@@ -35,77 +34,16 @@ namespace ClubManager.Services
 
             return stu;
         }
+        
 
-        public SpecificationVO GetSpec(long id)
+        public bool AddNewStudent(NewStudentQO stuQO)
         {
-            var spec = _context.Specifications
-                .Select(s => new SpecificationVO
-                {
-                    SpecificationId = s.SpecificationId,
-                    AdminName = s.User.Name,
-                    Name = s.Name,
-                    Content = s.Content,
-                    Date = s.Date
-                }).AsNoTracking().FirstOrDefault(s => s.SpecificationId == id);
-            return spec;
-        }
-
-        public IQueryable<SpecificationVO> GetSpec(string query)
-        {
-
-            var spec = _context.Specifications
-                .Select(s => new SpecificationVO
-                {
-                    SpecificationId = s.SpecificationId,
-                    AdminName = s.User.Name,
-                    Name = s.Name,
-                    Content = s.Content,
-                    Date = s.Date
-                })
-                .AsNoTracking();
-            
-            if (!String.IsNullOrEmpty(query))
-            {
-                spec = spec.Where(c => c.Name.Contains(query));
-            }
-
-            return spec;
-        }
-
-        public Specifications AddSpec(SpecificationQO ps, long userId)
-        {
-            var newSpec = new Specifications
-                {Content = ps.Content, Date = DateTime.Now, Name = ps.Name, UserId = userId};
-            _context.Specifications.Add(newSpec);
-            _context.SaveChanges();
-            return newSpec;
-        }
-
-        public void PutSpec(SpecificationQO ps, long id, long userId)
-        {
-            var newSpec = new Specifications
-                {SpecificationId = id, Content = ps.Content, Date = DateTime.Now, Name = ps.Name, UserId = userId};
-            _context.Entry(newSpec).State = EntityState.Modified;
-            _context.SaveChanges();
-        }
-
-        public bool DeleteSpec(long id)
-        {
-            var s = _context.Specifications.Find(id);
-            if (s == null) return false;
-            _context.Specifications.Remove(s);
+            if (_context.StudentMeta.FirstOrDefault(s => s.Number == stuQO.Number) != null) return false;
+            var newStu = new StudentMeta
+                { Number = stuQO.Number, Name = stuQO.Name, Grade = stuQO.Grade, Major = stuQO.Major};
+            _context.StudentMeta.Add(newStu);
             _context.SaveChanges();
             return true;
-        }
-
-        public Students AddNewStudent(NewStudentQO student)
-        {
-            if (_context.Students.FirstOrDefault(s => s.Number == student.Number) != null) return null;
-            var newStu = new Students
-                {Number = student.Number, Name = student.Name, Grade = student.Grade, Major = student.Major, Phone = student.Phone};
-            _context.Students.Add(newStu);
-            _context.SaveChanges();
-            return newStu;
         }
 
         public IQueryable<SponsorshipVO> GetSponsorship(string query)
@@ -115,7 +53,7 @@ namespace ClubManager.Services
                 {
                     SponsorshipId = s.SponsorshipId,
                     ClubName = s.Club.Name,
-                    ApplyTime = s.ApplyTime,
+                    ApplyDate = s.ApplyDate,
                     Sponsor = s.Sponsor,
                     Amount = s.Amount,
                     adminName=s.Admin.Name,

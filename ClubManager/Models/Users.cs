@@ -7,8 +7,8 @@ namespace ClubManager
     {
         public Users()
         {
-            Clubs = new HashSet<Clubs>();
-            Students = new HashSet<Students>();
+            Announcements = new HashSet<Announcements>();
+            Messages = new HashSet<Messages>();
         }
 
         public long UserId { get; set; }
@@ -17,7 +17,9 @@ namespace ClubManager
         public int UserType { get; set; }
 
         public virtual Administrators Administrators { get; set; }
-        public virtual ICollection<Clubs> Clubs { get; set; }
-        public virtual ICollection<Students> Students { get; set; }
+        public virtual Clubs Clubs { get; set; }
+        public virtual Students Students { get; set; }
+        public virtual ICollection<Announcements> Announcements { get; set; }
+        public virtual ICollection<Messages> Messages { get; set; }
     }
 }
