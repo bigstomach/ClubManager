@@ -8,7 +8,7 @@ namespace ClubManager.Services
     {
         IQueryable<StudentMetaVO> GetStudentInfo(string query);
         bool AddNewStudent (NewStudentQO student);
-        IQueryable<SponsorshipVO> GetSponsorship(string query);
+        IQueryable<SponsorshipVO> GetSponsorship(string status,string query);
         SponsorshipVO GetSponsorshipDetails(long id);
         bool UpdateSuggestion(SponsorshipSuggestionQO newsuggestion, long userId);
         bool UpdateStatus(SponsorshipStatusQO newStatus, long UserId);

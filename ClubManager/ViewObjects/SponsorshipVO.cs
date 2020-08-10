@@ -12,14 +12,12 @@ namespace ClubManager.ViewObjects
         public DateTime ApplyDate { get; set; }
         public string Sponsor { get; set; }
         public decimal Amount { get; set; }
-        public string adminName { get; set; }
-        public string Requirement { get; set; }
-
         public string AdminName { get; set; }
+        public int Status { get; set; }//0表示待审核，1表示审核通过，2表示审核未通过
+
+        public string Requirement { get; set; }
         public string Suggestion { get; set; }
 
         public long? AdminId { get; set; }
-        public int Status { get; set; }//0表示待审核，1表示审核通过，2表示审核未通过
-
     }
 }

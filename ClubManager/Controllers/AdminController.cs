@@ -55,13 +55,12 @@ namespace ClubManager.Controllers
         [HttpPost("getSponsorships")]
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(PaginatedList<SponsorshipVO>),200)]
-        public ActionResult<PaginatedList<SponsorshipVO>> GetSponsorships([FromBody] PageQO SponsorshipPage)
+        public ActionResult<PaginatedList<SponsorshipVO>> GetSponsorships([FromBody] SponsorshipListQO SponsorshipPage)
         {
-            if (SponsorshipPage.Query != "unaudited" && SponsorshipPage.Query != "failed" && SponsorshipPage.Query != "pass" && SponsorshipPage.Query != "all")
-                return NotFound();
-            var Sponsorships = _adminService.GetSponsorship(SponsorshipPage.Query); 
-            return Ok(PaginatedList<SponsorshipVO>.Create(Sponsorships, SponsorshipPage.PageNumber ?? 1, SponsorshipPage.PageSize));
-
+            if (SponsorshipPage.Status != "unaudited" && SponsorshipPage.Status != "failed" && SponsorshipPage.Status != "pass" && SponsorshipPage.Status != "all") return NotFound();
+            var Sponsorships = _adminService.GetSponsorship(SponsorshipPage.Status,SponsorshipPage.PageQO.Query);
+            if (Sponsorships == null) return NotFound();
+            else return Ok(PaginatedList<SponsorshipVO>.Create(Sponsorships, SponsorshipPage.PageQO.PageNumber ?? 1, SponsorshipPage.PageQO.PageSize));
         }
 
         //根据赞助id获取赞助详情
@@ -90,10 +89,9 @@ namespace ClubManager.Controllers
         [HttpPost("updateStatus")]
         [ProducesResponseType(404)]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
         public IActionResult UpdateStatus(SponsorshipStatusQO newStatus)
         {
-            if (newStatus.status > 2 || newStatus.status <= 0) return BadRequest();//只能修改为审核通过或者未通过，不能修改为待审核
+            if (newStatus.Status > 2 || newStatus.Status <= 0) return NotFound();//只能修改为审核通过或者未通过，不能修改为待审核
             var userId = Utils.GetCurrentUserId(this.User);
             var exist = _adminService.UpdateStatus(newStatus, userId);
             if (exist) return Ok();
