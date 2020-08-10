@@ -20,7 +20,7 @@ namespace ClubManager
         public bool IsPublic { get; set; }
         public DateTime EventTime { get; set; }
         public DateTime ApplyDate { get; set; }
-        public bool Status { get; set; }
+        public int Status { get; set; }
         public string Suggestion { get; set; }
 
         public virtual Administrators Admin { get; set; }

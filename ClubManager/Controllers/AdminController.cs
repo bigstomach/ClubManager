@@ -75,27 +75,86 @@ namespace ClubManager.Controllers
         }
 
         //管理员根据赞助id批复赞助
-        [HttpPost("updateSuggestion")]
+        [HttpPost("updateSponSuggestion")]
         [ProducesResponseType(404)]
         [ProducesResponseType(200)]
-        public IActionResult UpdateSuggestion(SponsorshipSuggestionQO newsuggestion)
+        public IActionResult UpdateSuggestion(SponsorshipSuggestionQO newSuggestion)
         {
             var userId = Utils.GetCurrentUserId(this.User);
-            var exist = _adminService.UpdateSuggestion(newsuggestion,userId);
+            var exist = _adminService.UpdateSponSuggestion(newSuggestion,userId);
             if (exist) return Ok();
             else return NotFound();
         }
 
-        [HttpPost("updateStatus")]
+        //管理员根据赞助id审核赞助是否通过
+        [HttpPost("updateSponStatus")]
         [ProducesResponseType(404)]
         [ProducesResponseType(200)]
         public IActionResult UpdateStatus(SponsorshipStatusQO newStatus)
         {
             if (newStatus.Status > 2 || newStatus.Status <= 0) return NotFound();//只能修改为审核通过或者未通过，不能修改为待审核
             var userId = Utils.GetCurrentUserId(this.User);
-            var exist = _adminService.UpdateStatus(newStatus, userId);
+            var exist = _adminService.UpdateSponStatus(newStatus, userId);
             if (exist) return Ok();
             else return NotFound();
         }
+
+        // ---------------------------------------------------------------------------------------
+        // ------------------------------------活动审核--------------------------------------------
+        // --------------------------------------------------------------------------------------- 
+
+        //获取所有活动
+        [HttpPost("getActivities")]
+        [ProducesResponseType(typeof(PaginatedList<ActivityVO>),200)]
+        [ProducesResponseType(404)]
+        public ActionResult<PaginatedList<ActivityVO>> GetActivities([FromBody] ActivityListQO ActivityPage)
+        {
+            if (ActivityPage.Status != "unaudited" && ActivityPage.Status != "failed" && ActivityPage.Status != "pass" && ActivityPage.Status != "all") return NotFound();
+            var Activity = _adminService.GetActivities(ActivityPage.Status, ActivityPage.PageQO.Query);
+            if (Activity == null) return NotFound();
+            else return Ok(PaginatedList<ActivityVO>.Create(Activity, ActivityPage.PageQO.PageNumber ?? 1, ActivityPage.PageQO.PageSize));
+        }
+
+        //根据活动id获取活动详细内容
+        [HttpPost("getActivityDetails/{id}")]
+        [ProducesResponseType(typeof(ActivityVO),200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetActivityDetails(long id)
+        {
+            var Activity = _adminService.GetActivityDetails(id);
+            if (Activity == null) return NotFound();
+            else return Ok(Activity);
+        }
+
+        //管理员根据活动id批复
+        [HttpPost("updateActSuggestion")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateActSuggestion([FromBody] ActivitySuggestionQO newActSuggestion)
+        {
+            var UserId = Utils.GetCurrentUserId(this.User);
+            var exist = _adminService.UpdateActSuggestion(newActSuggestion, UserId);
+            if (exist) return Ok();
+            else return NotFound();
+        }
+
+        //管理员根据活动id审核活动是否通过
+        [HttpPost("updateActStatus")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateActStatus([FromBody] ActivityStatusQO newActStatus)
+        {
+            var UserId = Utils.GetCurrentUserId(this.User);
+            var exist = _adminService.UpdateActStatus(newActStatus, UserId);
+            if (exist) return Ok();
+            else return NotFound();
+        }
+
+        // ---------------------------------------------------------------------------------------
+        // ------------------------------------新社团审核--------------------------------------------
+        // --------------------------------------------------------------------------------------- 
+
+        //获取社团列表
+
     }
 }

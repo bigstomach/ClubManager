@@ -10,7 +10,11 @@ namespace ClubManager.Services
         bool AddNewStudent (NewStudentQO student);
         IQueryable<SponsorshipVO> GetSponsorship(string status,string query);
         SponsorshipVO GetSponsorshipDetails(long id);
-        bool UpdateSuggestion(SponsorshipSuggestionQO newsuggestion, long userId);
-        bool UpdateStatus(SponsorshipStatusQO newStatus, long UserId);
+        bool UpdateSponSuggestion(SponsorshipSuggestionQO newSuggestion, long userId);
+        bool UpdateSponStatus(SponsorshipStatusQO newStatus, long UserId);
+        IQueryable<ActivityVO> GetActivities(string status, string query);
+        ActivityVO GetActivityDetails(long id);
+        bool UpdateActSuggestion(ActivitySuggestionQO newActSuggestion, long UserId);
+        bool UpdateActStatus(ActivityStatusQO newActStatus, long UserId);
     }
 }
