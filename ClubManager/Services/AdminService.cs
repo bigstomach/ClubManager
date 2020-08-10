@@ -199,5 +199,48 @@ namespace ClubManager.Services
             return true;
         }
 
+        public ClubVO GetClubDetails(long ClubId,long ManagerId)
+        {
+            var Club = (
+                from Students in _context.Students
+                join StudentMeta in _context.StudentMeta on Students.Number equals StudentMeta.Number
+                from Clubs in _context.Clubs
+                select new ClubVO
+                {
+                    ClubId = Clubs.ClubId,
+                    Name = Clubs.Name,
+                    Type = Clubs.Type,
+                    Description = Clubs.Description,
+                    EstablishmentDate = Clubs.EstablishmentDate,
+                    ManagerId = Students.StudentId,
+                    PresidentName = StudentMeta.Name,
+                    Phone = Students.Phone,
+                    Mail = Students.Mail,
+                    Number = Students.Number,
+                    Grade = StudentMeta.Grade,
+                    Major = StudentMeta.Major
+                }).AsNoTracking().FirstOrDefault(m => m.ManagerId == ManagerId && m.ClubId == ClubId);
+            return Club;
+        }
+
+        public bool SendMessage(MessageQO message)
+        {
+            var User = _context.Users.Find(message.UserId);
+            if (string.IsNullOrEmpty(message.Title)) return false;//设置消息的标题不能为空
+            if (User == null) return false;
+            var Message = new Messages
+            {
+                MessageId = _context.Messages.LastOrDefault().MessageId + 1,//想搞自增主键，但是不清楚这样会不会出问题
+                UserId = message.UserId,
+                Title = message.Title,
+                Content = message.Content,
+                Time = DateTime.Now,
+                Read = false
+            };
+            _context.Messages.Add(Message);
+            _context.SaveChanges();
+            return true;
+        }
+
     }
 }
