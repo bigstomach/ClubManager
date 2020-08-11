@@ -13,5 +13,10 @@ namespace ClubManager.Helpers
         {
             return currentUser.FindFirst(ClaimTypes.Name).Value;
         }
+        public static string GetCurrentUserType(ClaimsPrincipal currentUser)
+        {
+            return currentUser.FindFirst(ClaimTypes.Role).Value;
+        }
+        
     }
 }
