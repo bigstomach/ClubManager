@@ -173,38 +173,50 @@ namespace ClubManager.Controllers
 
         //更新学生信息
         [HttpPost("updateStudentMeta")]
-        [ProducesResponseType(typeof(bool),200)]
+        [ProducesResponseType(typeof(SuccessVO),200)]
         public IActionResult UpdateStudentMeta([FromBody]StudentMetaQO newStudentMeta)
         {
-            var isSuccess = _adminService.UpdateStudentMeta(newStudentMeta);
-            return Ok(isSuccess);
+            SuccessVO success = new SuccessVO
+            {
+                IsSuccess = _adminService.UpdateStudentMeta(newStudentMeta)
+            };
+            return Ok(success);
         }
 
         //更新学生毕业状态
         [HttpPost("updateGraduate/{number}")]
-        [ProducesResponseType(typeof(bool),200)]
+        [ProducesResponseType(typeof(SuccessVO), 200)]
         public IActionResult UpdateGraduate(int number)
         {
-            var isSuccess = _adminService.UpdateGraduate(number);
-            return Ok(isSuccess);
+            SuccessVO success = new SuccessVO
+            {
+                IsSuccess = _adminService.UpdateGraduate(number)
+            };
+            return Ok(success);
         }
 
         //删除学生信息
         [HttpPost("deleteStudentMeta/{number}")]
-        [ProducesResponseType(typeof(bool),200)]
+        [ProducesResponseType(typeof(SuccessVO), 200)]
         public IActionResult DeleteStudentMeta(int number)
         {
-            var isSuccess = _adminService.DeleteStudentMeta(number);
-            return Ok(isSuccess);
+            SuccessVO success = new SuccessVO
+            {
+                IsSuccess = _adminService.DeleteStudentMeta(number)
+            };
+            return Ok(success);
         }
 
         //新增学生信息
         [HttpPost("insertStudentMeta")]
-        [ProducesResponseType(typeof(bool),200)]
+        [ProducesResponseType(typeof(SuccessVO), 200)]
         public IActionResult InsertStudentMeta(StudentMetaQO newStudentMetaQO)
         {
-            var isSuccess = _adminService.InsertStudentMeta(newStudentMetaQO);
-            return Ok(isSuccess);
+            SuccessVO success = new SuccessVO
+            {
+                IsSuccess = _adminService.InsertStudentMeta(newStudentMetaQO)
+            };
+            return Ok(success);
         }
     }
 }
