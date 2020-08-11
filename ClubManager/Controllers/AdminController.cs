@@ -22,31 +22,6 @@ namespace ClubManager.Controllers
         }
         
         // ---------------------------------------------------------------------------------------
-        // ------------------------------------学生管理--------------------------------------------
-        // ---------------------------------------------------------------------------------------  
-
-        //获取学生信息并分页
-        [HttpPost("getStudentInfo")]
-        [ProducesResponseType(typeof(PaginatedList<StudentMetaVO>), 200)]
-        public ActionResult<PaginatedList<StudentMetaVO>> GetStudentInfo([FromBody] PageQO pq)
-        {
-            var stu = _adminService.GetStudentInfo(pq.Query);
-            return Ok(PaginatedList<StudentMetaVO>.Create(stu, pq.PageNumber ?? 1, pq.PageSize));
-        }
-        
-        //增加一条新生的记录
-        [HttpPost("addOneStudentInfo")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        public IActionResult addOneStudentInfo(NewStudentQO student)
-        {
-            var newStu = _adminService.AddNewStudent(student);
-            if (!newStu) return NotFound(new {msg = "学号已存在"});
-            return Ok();
-        }
-        
-
-        // ---------------------------------------------------------------------------------------
         // ------------------------------------赞助审核--------------------------------------------
         // ---------------------------------------------------------------------------------------  
 
@@ -160,7 +135,7 @@ namespace ClubManager.Controllers
         [HttpPost("getClubDetails")]
         [ProducesResponseType(typeof(ClubVO),200)]
         [ProducesResponseType(404)]
-        public IActionResult GetClubDetails(ClubDetailsQO clubDetailsQO)
+        public IActionResult GetClubDetails([FromBody]ClubDetailsQO clubDetailsQO)
         {
             var Club = _adminService.GetClubDetails(clubDetailsQO.ClubId,clubDetailsQO.ManagerId);
             if (Club == null) return NotFound();
@@ -171,7 +146,7 @@ namespace ClubManager.Controllers
         [HttpPost("sendMessage")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult SendMessage(MessageQO message)
+        public IActionResult SendMessage([FromBody]MessageQO message)
         {
             var exist = _adminService.SendMessage(message);
             if (exist) return Ok();
@@ -184,6 +159,52 @@ namespace ClubManager.Controllers
         // ------------------------------------学生元信息管理-------------------------------------
         // ---------------------------------------------------------------------------------------
 
-        //
+        //获取学生列表
+        [HttpPost("getStudentMetas")]
+        [ProducesResponseType(typeof(PaginatedList<StudentMetaVO>),200)]
+        [ProducesResponseType(404)]
+        public ActionResult<PaginatedList<StudentMetaVO>> GetStudentMetas([FromBody]StudentMetaListQO studentMetaList)
+        {
+            if (studentMetaList.Status != "graduated" && studentMetaList.Status != "atSchool" && studentMetaList.Status != "all") return NotFound();
+            var studentMeta = _adminService.GetStudentMetas(studentMetaList.Status, studentMetaList.PageQO.Query);
+            if (studentMeta == null) return NotFound();
+            else return Ok(PaginatedList<StudentMetaVO>.Create(studentMeta, studentMetaList.PageQO.PageNumber ?? 1, studentMetaList.PageQO.PageSize));
+        }
+
+        //更新学生信息
+        [HttpPost("updateStudentMeta")]
+        [ProducesResponseType(typeof(bool),200)]
+        public IActionResult UpdateStudentMeta([FromBody]StudentMetaQO newStudentMeta)
+        {
+            var isSuccess = _adminService.UpdateStudentMeta(newStudentMeta);
+            return Ok(isSuccess);
+        }
+
+        //更新学生毕业状态
+        [HttpPost("updateGraduate/{number}")]
+        [ProducesResponseType(typeof(bool),200)]
+        public IActionResult UpdateGraduate(int number)
+        {
+            var isSuccess = _adminService.UpdateGraduate(number);
+            return Ok(isSuccess);
+        }
+
+        //删除学生信息
+        [HttpPost("deleteStudentMeta/{number}")]
+        [ProducesResponseType(typeof(bool),200)]
+        public IActionResult DeleteStudentMeta(int number)
+        {
+            var isSuccess = _adminService.DeleteStudentMeta(number);
+            return Ok(isSuccess);
+        }
+
+        //新增学生信息
+        [HttpPost("insertStudentMeta")]
+        [ProducesResponseType(typeof(bool),200)]
+        public IActionResult InsertStudentMeta(StudentMetaQO newStudentMetaQO)
+        {
+            var isSuccess = _adminService.InsertStudentMeta(newStudentMetaQO);
+            return Ok(isSuccess);
+        }
     }
 }

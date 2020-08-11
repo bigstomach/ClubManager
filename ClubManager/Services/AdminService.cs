@@ -16,36 +16,6 @@ namespace ClubManager.Services
             _context = context;
         }
 
-        public IQueryable<StudentMetaVO> GetStudentInfo(string query)
-        {
-            var stu = _context.StudentMeta
-                .Select(s => new StudentMetaVO
-                {
-                    Number = s.Number,
-                    Name = s.Name,
-                    Grade = s.Grade,
-                    Major = s.Major,
-                    Status = s.Status
-                }).AsNoTracking();
-            if (!String.IsNullOrEmpty(query))
-            {
-                stu = stu.Where(s => s.Name.Contains(query));
-            }
-
-            return stu;
-        }
-        
-
-        public bool AddNewStudent(NewStudentQO stuQO)
-        {
-            if (_context.StudentMeta.FirstOrDefault(s => s.Number == stuQO.Number) != null) return false;
-            var newStu = new StudentMeta
-                { Number = stuQO.Number, Name = stuQO.Name, Grade = stuQO.Grade, Major = stuQO.Major};
-            _context.StudentMeta.Add(newStu);
-            _context.SaveChanges();
-            return true;
-        }
-
         public IQueryable<SponsorshipVO> GetSponsorship(string status,string query)
         {
             var Spon = _context.Sponsorships.Select(
@@ -242,5 +212,75 @@ namespace ClubManager.Services
             return true;
         }
 
+        public IQueryable<StudentMetaVO> GetStudentMetas(string status,string query)
+        {
+            var student = _context.StudentMeta.Select(
+                s => new StudentMetaVO
+                {
+                    Number = s.Number,
+                    Name = s.Name,
+                    Major = s.Major,
+                    Grade = s.Grade,
+                    Status = s.Status
+                }).AsNoTracking();
+            if (status == "graduated") student = student.Where(s => s.Status == false);//查找毕业学生
+            if (status == "atSchool") student = student.Where(s => s.Status == true);//查找当前在读学生
+            //all表示查找所有学生，不筛选状态
+            //模糊搜索学生姓名，专业
+            if (string.IsNullOrEmpty(query)) return student;//如果为空，直接返回，不进行模糊搜索
+            student=student.Where(s => s.Name.Contains(query) || s.Major.Contains(query));
+            return student;
+        }
+
+        public bool UpdateStudentMeta(StudentMetaQO newStudentMeta)
+        {
+            var studentMeta = _context.StudentMeta.Find(newStudentMeta.Number);
+            if (studentMeta == null) return false;//如果找不到该学号的学生就更新失败
+            _context.StudentMeta.Attach(studentMeta);
+            studentMeta.Name = newStudentMeta.Name;
+            studentMeta.Major = newStudentMeta.Major;
+            studentMeta.Grade = newStudentMeta.Grade;
+            studentMeta.Status = newStudentMeta.Status;
+            _context.SaveChanges();
+            return true;
+        }
+
+        public bool UpdateGraduate(int number)
+        {
+            var studentMeta = _context.StudentMeta.Find(number);
+            if (studentMeta == null) return false;
+            _context.StudentMeta.Attach(studentMeta);
+            studentMeta.Status = false;
+            _context.SaveChanges();
+            return true;
+        }
+
+        public bool DeleteStudentMeta(int number)
+        {
+            var studentMeta = _context.StudentMeta.Find(number);
+            if (studentMeta == null) return false;//如果找不到该学号的学生就删除失败
+            var student = _context.Students.FirstOrDefault(s => s.Number == number);
+            if (student != null) return false;//如果该学生元信息已经申请了学生账号就不能删除
+            _context.StudentMeta.Remove(studentMeta);
+            _context.SaveChanges();
+            return true;
+        }
+
+        public bool InsertStudentMeta(StudentMetaQO newStudentMetaQO)
+        {
+            var studentMeta = _context.StudentMeta.Find(newStudentMetaQO.Number);
+            if (studentMeta != null) return false;//如果已经存在该学号就添加失败
+            var newStudentMeta = new StudentMeta
+            {
+                Number = newStudentMetaQO.Number,
+                Name = newStudentMetaQO.Name,
+                Major = newStudentMetaQO.Major,
+                Grade = newStudentMetaQO.Grade,
+                Status = newStudentMetaQO.Status
+            };
+            _context.StudentMeta.Add(newStudentMeta);
+            _context.SaveChanges();
+            return true;
+        }
     }
 }
