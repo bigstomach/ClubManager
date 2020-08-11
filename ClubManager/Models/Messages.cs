@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 
 namespace ClubManager
@@ -10,7 +10,7 @@ namespace ClubManager
         public string Title { get; set; }
         public string Content { get; set; }
         public DateTime Time { get; set; }
-        public bool? Read { get; set; }
+        public bool Read { get; set; }
 
         public virtual Users User { get; set; }
     }
