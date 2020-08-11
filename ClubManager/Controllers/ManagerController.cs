@@ -35,6 +35,17 @@ namespace ClubManager.Controllers
             var clubId = Utils.GetCurrentUserId(this.User);
             return Ok(new NameVO {Name = _managerService.GetClubName(clubId)});
         }
+        
+        // ---------------------------------------------------------------------------------------
+        // ------------------------------------社团信息修改-----------------------------------------
+        [HttpPost("updateClubInfo")]
+        [ProducesResponseType(typeof(NameVO), 200)]
+        public IActionResult UpdateClubInfo([FromBody] ClubQO aq)
+        {
+            var clubId = Utils.GetCurrentUserId(this.User);
+            _managerService.UpdateClubInfo(clubId, aq);
+            return Ok();
+        }
 
         // ---------------------------------------------------------------------------------------
         // ------------------------------------活动管理--------------------------------------------
@@ -105,6 +116,15 @@ namespace ClubManager.Controllers
             var exist = _managerService.DeleteAct(clubId,id);
             if (exist) return Ok();
             return NotFound();
+        }
+        
+        //查看活动人员
+        [HttpPost("getActivityMembers")]
+        [ProducesResponseType(typeof(PaginatedList<MemberVO>), 200)]
+        public IActionResult GetActivityMembers([FromBody] PageQO pq,long ActivityId)
+        {
+            var memb = _managerService.GetActivityMem(ActivityId, pq.Query);
+            return Ok(PaginatedList<MemberVO>.Create(memb, pq.PageNumber ?? 1, pq.PageSize));
         }
         
 
@@ -273,6 +293,16 @@ namespace ClubManager.Controllers
             var clubId = Utils.GetCurrentUserId(this.User);
             _managerService.AddOneSponsorship(clubId,aq);
             return Ok();
+        }
+        
+        //查看已有赞助
+        [HttpPost("getClubHadSponsorship")]
+        [ProducesResponseType(typeof(PaginatedList<SponsorshipVO>), 200)]
+        public IActionResult GetClubHadSponsorship([FromBody] PageQO pq)
+        {
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var mems = _managerService.GetClubHadSponsorship(clubId);
+            return Ok(PaginatedList<SponsorshipVO>.Create(mems, pq.PageNumber ?? 1, pq.PageSize));
         }
 
 

@@ -25,6 +25,17 @@ namespace ClubManager.Services
         {
             return _context.Clubs.Find(clubId).Name;
         }
+        
+        //--------------------------------社团信息修改-----------------------------------
+        public bool UpdateClubInfo(long clubId, ClubQO ClQO)
+        {
+            _context.Clubs.Find(clubId).Name = ClQO.Name;
+            _context.Clubs.Find(clubId).Description = ClQO.Description;
+            _context.Clubs.Find(clubId).Type = ClQO.Type;
+            _context.SaveChanges();
+            return true;
+        }
+
 
         //--------------------------------活动增删改查-----------------------------------
 
@@ -81,6 +92,34 @@ namespace ClubManager.Services
 
             _context.SaveChanges();
             return true;
+        }
+        
+        //获取活动成员列表
+        public IQueryable<MemberVO> GetActivityMem(long ActivityId, string query)
+        {
+            var members = (
+                from ParticipateActivity in _context.ParticipateActivity
+                join stu in _context.Students
+                    on ParticipateActivity.StudentId equals stu.StudentId
+                join stuMeta in _context.StudentMeta
+                    on stu.Number equals stuMeta.Number
+                where ParticipateActivity.ActivityId == ActivityId 
+                orderby stu.Number
+                select new MemberVO
+                {
+                    StudentId = stu.StudentId,
+                    Number = stu.Number,
+                    Name = stuMeta.Name,
+                    Major = stuMeta.Major,
+                    Grade = stuMeta.Grade,
+                    Phone = stu.Phone
+                }).AsNoTracking();
+            if (!String.IsNullOrEmpty(query))
+            {
+                members = members.Where(m => m.Name.Contains(query));
+            }
+
+            return members;
         }
 
         //删除一条活动记录
@@ -276,10 +315,31 @@ namespace ClubManager.Services
                 ClubId = clubId,
                 Sponsor = sponsorshipQO.Sponsor,
                 Amount = sponsorshipQO.Amount,
-                Requirement = sponsorshipQO.Requirement
+                Requirement = sponsorshipQO.Requirement,
+                AdminId=null
             };
             _context.Sponsorships.Add(newSponsorship);
             _context.SaveChanges();
+        }
+        
+        //查看已有赞助
+        public IQueryable<SponsorshipVO> GetClubHadSponsorship(long clubId)
+        {
+            var sponsorships = (
+                from Sponsorships in _context.Sponsorships
+                where Sponsorships.ClubId == clubId
+                select new SponsorshipVO
+                {
+                    SponsorshipId = Sponsorships.SponsorshipId,
+                    Sponsor = Sponsorships.Sponsor,
+                    Amount = Sponsorships.Amount,
+                    Requirement = Sponsorships.Requirement,
+                    ApplyDate = Sponsorships.ApplyDate,
+                    Status = Sponsorships.Status,
+                    Suggestion = Sponsorships.Suggestion,
+                    AdminId = Sponsorships.AdminId
+                }).AsNoTracking();
+            return sponsorships;
         }
     }
 }
