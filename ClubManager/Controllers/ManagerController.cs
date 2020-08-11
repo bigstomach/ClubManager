@@ -304,7 +304,5 @@ namespace ClubManager.Controllers
             var mems = _managerService.GetClubHadSponsorship(clubId);
             return Ok(PaginatedList<SponsorshipVO>.Create(mems, pq.PageNumber ?? 1, pq.PageSize));
         }
-
-
     }
 }

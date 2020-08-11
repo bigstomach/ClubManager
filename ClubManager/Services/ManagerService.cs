@@ -94,6 +94,16 @@ namespace ClubManager.Services
             return true;
         }
         
+        //删除一条活动记录
+        public bool DeleteAct(long clubId,long id)
+        {
+            var act = _context.Activities.FirstOrDefault(a => a.ActivityId == id && a.ClubId == clubId);
+            if (act == null) return false;
+            _context.Activities.Remove(act);
+            _context.SaveChanges();
+            return true;
+        }
+        
         //获取活动成员列表
         public IQueryable<MemberVO> GetActivityMem(long ActivityId, string query)
         {
@@ -121,17 +131,7 @@ namespace ClubManager.Services
 
             return members;
         }
-
-        //删除一条活动记录
-        public bool DeleteAct(long clubId,long id)
-        {
-            var act = _context.Activities.FirstOrDefault(a => a.ActivityId == id && a.ClubId == clubId);
-            if (act == null) return false;
-            _context.Activities.Remove(act);
-            _context.SaveChanges();
-            return true;
-        }
-
+        
         //--------------------------------公告增删改查-----------------------------------
 
         //获取公告列表

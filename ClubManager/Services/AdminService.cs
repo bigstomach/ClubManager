@@ -96,11 +96,11 @@ namespace ClubManager.Services
 
         public bool UpdateSuggestion(SponsorshipSuggestionQO newsuggestion,long userId)
         {
-            long SponsorshipId = newsuggestion.sponsorshipId;
+            long SponsorshipId = newsuggestion.SponsorshipId;
             var Sponsorship = _context.Sponsorships.Find(SponsorshipId);
             if (Sponsorship == null) return false;
             _context.Sponsorships.Attach(Sponsorship);//仅修改某个属性中的元素值
-            Sponsorship.Suggestion = newsuggestion.suggestion;
+            Sponsorship.Suggestion = newsuggestion.Suggestion;
             Sponsorship.AdminId = userId;
             _context.SaveChanges();
             return true;
