@@ -37,7 +37,7 @@ namespace ClubManager.Controllers
             if (Sponsorships == null) return NotFound();
             else return Ok(PaginatedList<SponsorshipVO>.Create(Sponsorships, SponsorshipPage.PageQO.PageNumber ?? 1, SponsorshipPage.PageQO.PageSize));
         }
-
+        
         //根据赞助id获取赞助详情
         [HttpPost("getSponsorshipDetails/{id}")]
         [ProducesResponseType(404)]

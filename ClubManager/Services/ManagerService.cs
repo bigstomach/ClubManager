@@ -25,7 +25,7 @@ namespace ClubManager.Services
         {
             return _context.Clubs.Find(clubId).Name;
         }
-
+        
         //--------------------------------社团信息修改-----------------------------------
         public bool UpdateClubInfo(long clubId, ClubQO ClQO)
         {
@@ -35,6 +35,7 @@ namespace ClubManager.Services
             _context.SaveChanges();
             return true;
         }
+
 
         //--------------------------------活动增删改查-----------------------------------
 
@@ -92,7 +93,7 @@ namespace ClubManager.Services
             _context.SaveChanges();
             return true;
         }
-
+        
         //删除一条活动记录
         public bool DeleteAct(long clubId,long id)
         {
@@ -102,6 +103,7 @@ namespace ClubManager.Services
             _context.SaveChanges();
             return true;
         }
+        
         //获取活动成员列表
         public IQueryable<MemberVO> GetActivityMem(long ActivityId, string query)
         {
@@ -129,6 +131,7 @@ namespace ClubManager.Services
 
             return members;
         }
+        
         //--------------------------------公告增删改查-----------------------------------
 
         //获取公告列表
@@ -292,7 +295,7 @@ namespace ClubManager.Services
                 orderby m.Term descending
                 select new ManagerVO
                 {
-                    StudentId = s.StudentId, Number = s.Number, Grade = sm.Grade, Major = sm.Major, Phone = s.Phone
+                    Term = m.Term, Number = s.Number, Grade = sm.Grade, Major = sm.Major, Phone = s.Phone
                 }).AsNoTracking();
             if (!String.IsNullOrEmpty(query))
             {
@@ -318,6 +321,7 @@ namespace ClubManager.Services
             _context.Sponsorships.Add(newSponsorship);
             _context.SaveChanges();
         }
+        
         //查看已有赞助
         public IQueryable<SponsorshipVO> GetClubHadSponsorship(long clubId)
         {

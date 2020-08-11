@@ -48,7 +48,7 @@ namespace ClubManager.Services
             Spon = Spon.Where(s => s.ClubName.Contains(query) || s.Sponsor.Contains(query));
             return Spon;
         }
-
+        
         public SponsorshipVO GetSponsorshipDetails(long id)
         {
             var Sponsorship = _context.Sponsorships.Select(
