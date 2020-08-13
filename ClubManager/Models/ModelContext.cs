@@ -27,16 +27,7 @@ namespace ClubManager
         public virtual DbSet<StudentMeta> StudentMeta { get; set; }
         public virtual DbSet<Students> Students { get; set; }
         public virtual DbSet<Users> Users { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseOracle("User ID=bigstomach;Password=bigstomach;Data Source=139.9.134.43:1521/ORCL;");
-            }
-        }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
@@ -161,9 +152,15 @@ namespace ClubManager
 
                 entity.Property(e => e.EstablishmentDate).HasColumnType("DATE");
 
+                entity.Property(e => e.Logo).HasColumnType("BLOB");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasColumnType("NVARCHAR2(100)");
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasDefaultValueSql("0 ");
 
                 entity.Property(e => e.Type).HasColumnType("NUMBER(9)");
 
