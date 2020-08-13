@@ -36,6 +36,22 @@ namespace ClubManager.Services
             return true;
         }
 
+        //查看入社申请
+        public IQueryable<JoinClubVO> GetJoinClub(long clubId,string query)
+        {
+            var joinclub = (
+                from JoinClub in _context.JoinClub
+                where JoinClub.ClubId == clubId
+                select new JoinClubVO
+                {
+                    ClubId=JoinClub.ClubId,
+                    StudentId=JoinClub.StudentId,
+                    ApplyDate=JoinClub.ApplyDate,
+                    ApplyReason=JoinClub.ApplyReason,
+                    Status=JoinClub.Status
+                }).AsNoTracking();
+            return joinclub;
+        }
 
         //--------------------------------活动增删改查-----------------------------------
 
@@ -323,7 +339,7 @@ namespace ClubManager.Services
         }
         
         //查看已有赞助
-        public IQueryable<SponsorshipVO> GetClubHadSponsorship(long clubId)
+        public IQueryable<SponsorshipVO> GetClubHadSponsorship(long clubId,string Query)
         {
             var sponsorships = (
                 from Sponsorships in _context.Sponsorships
@@ -340,6 +356,26 @@ namespace ClubManager.Services
                     AdminId = Sponsorships.AdminId
                 }).AsNoTracking();
             return sponsorships;
+        }
+        //获取一条详细赞助信息
+        public SponsorshipVO GetOneHadSponsorship(long SponsorshipId)
+        {
+            var spo = _context.Sponsorships
+                .Where(a => a.SponsorshipId == SponsorshipId)
+                .Select(a => new SponsorshipVO
+                {
+                    SponsorshipId = a.SponsorshipId,
+                    Sponsor = a.Sponsor,
+                    Amount = a.Amount,
+                    ApplyDate = a.ApplyDate,
+                    Requirement = a.Requirement,
+                    Status = a.Status,
+                    Suggestion = a.Suggestion,
+                    AdminId = a.AdminId
+                })
+                .AsNoTracking()
+                .FirstOrDefault();
+            return spo;
         }
     }
 }

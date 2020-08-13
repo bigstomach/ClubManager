@@ -46,17 +46,26 @@ namespace ClubManager.Controllers
             _managerService.UpdateClubInfo(clubId, aq);
             return Ok();
         }
+        // 查看入社申请
+        [HttpPost("getJoinClub")]
+        [ProducesResponseType(typeof(PaginatedList<JoinClubVO>), 200)]
+        public IActionResult GetJoinClub([FromBody] PageQO pq)
+        {
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var mems = _managerService.GetJoinClub(clubId,null);
+            return Ok(PaginatedList<JoinClubVO>.Create(mems, pq.PageNumber ?? 1, pq.PageSize));
+        }
+    
+    // ---------------------------------------------------------------------------------------
+    // ------------------------------------活动管理--------------------------------------------
+    // ---------------------------------------------------------------------------------------    
 
-        // ---------------------------------------------------------------------------------------
-        // ------------------------------------活动管理--------------------------------------------
-        // ---------------------------------------------------------------------------------------    
-        
-        
-        
-        //-------------------------------------活动查询--------------------------------------------
-        
-        //获取活动列表并分页
-        [HttpPost("getActivities")]
+
+
+    //-------------------------------------活动查询--------------------------------------------
+
+    //获取活动列表并分页
+    [HttpPost("getActivities")]
         [ProducesResponseType(typeof(PaginatedList<ActivityVO>), 200)]
         public IActionResult GetActivities([FromBody] PageQO pq)
         {
@@ -301,8 +310,22 @@ namespace ClubManager.Controllers
         public IActionResult GetClubHadSponsorship([FromBody] PageQO pq)
         {
             var clubId = Utils.GetCurrentUserId(this.User);
-            var mems = _managerService.GetClubHadSponsorship(clubId);
+            var mems = _managerService.GetClubHadSponsorship(clubId,pq.Query);
             return Ok(PaginatedList<SponsorshipVO>.Create(mems, pq.PageNumber ?? 1, pq.PageSize));
         }
+        //查看一个详细已有赞助
+        [HttpPost("getOneHadSponsorship/{SponsorshipId}")]
+        [ProducesResponseType(typeof(SponsorshipVO), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetOneHadSponsorship(long SponsorshipId)
+        {
+            var mem = _managerService.GetOneHadSponsorship(SponsorshipId);
+            if (mem == null)
+            {
+                return NotFound();
+            }
+            return Ok(mem);
+        }
+
     }
 }
