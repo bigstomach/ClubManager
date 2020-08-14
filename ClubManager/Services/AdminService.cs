@@ -200,7 +200,7 @@ namespace ClubManager.Services
             if (User == null) return false;
             var Message = new Messages
             {
-                MessageId = _context.Messages.LastOrDefault().MessageId + 1,//想搞自增主键，但是不清楚这样会不会出问题
+                MessageId = _context.Messages.Select(m => m.MessageId).Max() + 1,
                 UserId = message.UserId,
                 Title = message.Title,
                 Content = message.Content,
