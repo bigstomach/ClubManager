@@ -27,5 +27,11 @@ namespace ClubManager.Services
         bool UpdateGraduate(int number);
         bool DeleteStudentMeta(int number);
         bool InsertStudentMeta(StudentMetaQO newStudentMetaQO);
+
+        IQueryable<AnnouncementVO> GetAnnounces(long adminId, string query);
+        AnnouncementVO GetOneAnnounce(long adminId, long id);
+        void AddAnnounce(long adminId, AnnouncementQO announceQO);
+        bool UpdateAnnounce(long adminId, AnnouncementQO announceQO);
+        bool DeleteAnnounce(long adminId, long id);
     }
 }

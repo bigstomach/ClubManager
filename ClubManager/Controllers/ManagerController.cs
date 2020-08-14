@@ -35,37 +35,76 @@ namespace ClubManager.Controllers
             var clubId = Utils.GetCurrentUserId(this.User);
             return Ok(new NameVO {Name = _managerService.GetClubName(clubId)});
         }
-        
+
+        //负责人获取本社团信息
+        [HttpPost("getClubInfo")]
+        [ProducesResponseType(typeof(ClubVO),200)]
+        public IActionResult GetClubInfo([FromBody] ClubQO aq)
+        {
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var club = _managerService.GetClubInfo(clubId);
+            return Ok(club);
+        }
+
         // ---------------------------------------------------------------------------------------
         // ------------------------------------社团信息修改-----------------------------------------
-        [HttpPost("updateClubInfo")]
-        [ProducesResponseType(typeof(NameVO), 200)]
+        [HttpPost("editClubInfo")]
+        [ProducesResponseType(200)]
         public IActionResult UpdateClubInfo([FromBody] ClubQO aq)
         {
             var clubId = Utils.GetCurrentUserId(this.User);
-            _managerService.UpdateClubInfo(clubId, aq);
+            _managerService.EditClubInfo(clubId, aq);
             return Ok();
         }
+
         // 查看入社申请
-        [HttpPost("getJoinClub")]
+        [HttpPost("getJoin")]
         [ProducesResponseType(typeof(PaginatedList<JoinClubVO>), 200)]
-        public IActionResult GetJoinClub([FromBody] PageQO pq)
+        public IActionResult GetJoin([FromBody] PageQO pq)
         {
             var clubId = Utils.GetCurrentUserId(this.User);
-            var mems = _managerService.GetJoinClub(clubId,null);
+            var mems = _managerService.GetJoin(clubId,null);
             return Ok(PaginatedList<JoinClubVO>.Create(mems, pq.PageNumber ?? 1, pq.PageSize));
         }
-    
-    // ---------------------------------------------------------------------------------------
-    // ------------------------------------活动管理--------------------------------------------
-    // ---------------------------------------------------------------------------------------    
+
+        // 查看一个入社申请
+        [HttpPost("getOneJoin")]
+        [ProducesResponseType(typeof(JoinClubVO), 200)]
+        public IActionResult GetOneJoin(long studentId)
+        {
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var join = _managerService.GetOneJoin(clubId, studentId);
+            return Ok(join);
+        }
+        //入社审核结果
+        [HttpPost("joinResult")]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(200)]
+        public IActionResult JoinResult(JoinClubStatusQO newStatus,long studentId)
+        {
+            var clubId = Utils.GetCurrentUserId(this.User);
+            if (newStatus.Status == false)
+            {
+                _managerService.DeleteJoin(clubId, studentId);
+                return Ok();
+            }
+            else
+            {
+                _managerService.OkJoin(clubId, studentId);
+                return Ok();
+            }
+        
+        }
+        // ---------------------------------------------------------------------------------------
+        // ------------------------------------活动管理--------------------------------------------
+        // ---------------------------------------------------------------------------------------    
 
 
 
-    //-------------------------------------活动查询--------------------------------------------
+        //-------------------------------------活动查询--------------------------------------------
 
-    //获取活动列表并分页
-    [HttpPost("getActivities")]
+        //获取活动列表并分页
+        [HttpPost("getActivities")]
         [ProducesResponseType(typeof(PaginatedList<ActivityVO>), 200)]
         public IActionResult GetActivities([FromBody] PageQO pq)
         {
@@ -127,7 +166,7 @@ namespace ClubManager.Controllers
             return NotFound();
         }
         
-        //查看活动人员
+        //查看审核通过活动人员
         [HttpPost("getActivityMembers")]
         [ProducesResponseType(typeof(PaginatedList<MemberVO>), 200)]
         public IActionResult GetActivityMembers([FromBody] PageQO pq,long ActivityId)
@@ -135,17 +174,49 @@ namespace ClubManager.Controllers
             var memb = _managerService.GetActivityMem(ActivityId, pq.Query);
             return Ok(PaginatedList<MemberVO>.Create(memb, pq.PageNumber ?? 1, pq.PageSize));
         }
-        
+        //查看待审核活动人员
+        [HttpPost("getWaitActivityMembers")]
+        [ProducesResponseType(typeof(PaginatedList<MemberVO>), 200)]
+        public IActionResult GetWaitActivityMembers([FromBody] PageQO pq, long ActivityId)
+        {
+            var memb = _managerService.GetActivityMem(ActivityId, pq.Query);
+            return Ok(PaginatedList<MemberVO>.Create(memb, pq.PageNumber ?? 1, pq.PageSize));
+        }
+        // 查看一个参加活动申请
+        [HttpPost("getOneWaitActivityMembers")]
+        [ProducesResponseType(typeof(ParticipateActivityVO), 200)]
+        public IActionResult GetOneWaitActivityMembers(long studentId,long activityId)
+        {
+            var part = _managerService.GetOneWaitActivityMembers( studentId,activityId);
+            return Ok(part);
+        }
+        //参加活动审核结果
+        [HttpPost("participateResult")]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(200)]
+        public IActionResult ParticipateResult(ParticipateActivityStatusQO newStatus, long studentId,long activityId)
+        {
+            if (newStatus.Status == false)
+            {
+                _managerService.DeleteParticipate(activityId, studentId);
+                return Ok();
+            }
+            else
+            {
+                _managerService.OkParticipate(activityId, studentId);
+                return Ok();
+            }
 
+        }
         // ---------------------------------------------------------------------------------------
         // ------------------------------------公告管理--------------------------------------------
         // ---------------------------------------------------------------------------------------    
-        
-        
-        
-        
+
+
+
+
         //-------------------------------------公告查询--------------------------------------------
-        
+
         //获取公告列表并分页
         [HttpPost("getAnnouncements")]
         [ProducesResponseType(typeof(PaginatedList<AnnouncementVO>), 200)]

@@ -14,5 +14,7 @@ namespace ClubManager.Services
         bool SetMessageRead(long userId,long id);
         IQueryable<AnnouncementVO> GetAnnouncements();
         AnnouncementVO GetOneAnnouncement(long id);
+
+        IQueryable<AnnouncementVO> GetClubAnnouncements(long ClubId);
     }
 }

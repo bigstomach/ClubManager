@@ -218,5 +218,76 @@ namespace ClubManager.Controllers
             };
             return Ok(success);
         }
+        // ---------------------------------------------------------------------------------------
+        // ------------------------------------公告管理--------------------------------------------
+        // ---------------------------------------------------------------------------------------    
+
+
+
+
+        //-------------------------------------公告查询--------------------------------------------
+
+        //获取公告列表并分页
+        [HttpPost("getAnnouncements")]
+        [ProducesResponseType(typeof(PaginatedList<AnnouncementVO>), 200)]
+        public IActionResult GetAnnouncements([FromBody] PageQO pq)
+        {
+            var adminId = Utils.GetCurrentUserId(this.User);
+            var announces = _adminService.GetAnnounces(adminId, pq.Query);
+            return Ok(PaginatedList<AnnouncementVO>.Create(announces, pq.PageNumber ?? 1, pq.PageSize));
+        }
+
+        //根据id获取一条公告
+        [HttpPost("getOneAnnouncement/{id}")]
+        [ProducesResponseType(typeof(AnnouncementVO), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetOneAnnouncement(long id)
+        {
+            var adminId = Utils.GetCurrentUserId(this.User);
+            var announce = _adminService.GetOneAnnounce(adminId, id);
+            if (announce == null)
+            {
+                return NotFound();
+            }
+            return Ok(announce);
+        }
+
+        //-------------------------------------公告增加--------------------------------------------
+        //增加一条公告记录
+        [HttpPost("addOneAnnouncement")]
+        [ProducesResponseType(200)]
+        public IActionResult AddOneAnnouncement([FromBody] AnnouncementQO aq)
+        {
+            var adminId = Utils.GetCurrentUserId(this.User);
+            _adminService.AddAnnounce(adminId, aq);
+            return Ok();
+        }
+
+        //-------------------------------------公告更新--------------------------------------------
+        //更新一条公告记录
+        //根据id更新一条活动记录
+        [HttpPost("updateOneAnnouncement/{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateOneAnnouncement([FromBody] AnnouncementQO aq)
+        {
+            var adminId = Utils.GetCurrentUserId(this.User);
+            var success = _adminService.UpdateAnnounce(adminId, aq);
+            if (success) return Ok();
+            return NotFound();
+        }
+
+        //--------------------------------------公告删除--------------------------------------------
+        //根据id删除一条公告记录
+        [HttpPost("deleteOneAnnouncement/{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult deleteOneAnnouncement(long id)
+        {
+            var adminId = Utils.GetCurrentUserId(this.User);
+            var exist = _adminService.DeleteAnnounce(adminId, id);
+            if (exist) return Ok();
+            return NotFound();
+        }
     }
 }

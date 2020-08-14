@@ -28,12 +28,20 @@ namespace ClubManager.Services
         bool ChangeManager(long clubId,long id);
         IQueryable<ManagerVO> GetManagers(long clubId, string query);
         void AddOneSponsorship(long clubId,SponsorshipQO sponsorshipQO);
-        bool UpdateClubInfo(long clubId, ClubQO ClQO);
+        bool EditClubInfo(long clubId, ClubQO ClQO);
         IQueryable<SponsorshipVO> GetClubHadSponsorship(long clubId,string Query);
         IQueryable<MemberVO> GetActivityMem(long ActivityId, string query);
 
-        IQueryable<JoinClubVO> GetJoinClub(long clubId, string query);
+        IQueryable<JoinClubVO> GetJoin(long clubId, string query);
         SponsorshipVO GetOneHadSponsorship(long SponsorshipId);
+        ClubVO GetClubInfo(long clubId);
+        JoinClubVO GetOneJoin(long ClubId, long StudentId);
+        void DeleteJoin(long clubId, long studentId);
+        void OkJoin(long clubId, long studentId);
+        IQueryable<MemberVO> GetWaitActivityMem(long ActivityId, string query);
+        ParticipateActivityVO GetOneWaitActivityMembers(long studentId, long activityId);
+        void DeleteParticipate(long activityId, long studentId);
 
+        void OkParticipate(long activityId, long studentId);
     }
 }

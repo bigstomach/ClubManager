@@ -282,5 +282,83 @@ namespace ClubManager.Services
             _context.SaveChanges();
             return true;
         }
+
+        //--------------------------------公告增删改查-----------------------------------
+
+        //获取公告列表
+        public IQueryable<AnnouncementVO> GetAnnounces(long adminId, string query)
+        {
+            var announces = _context.Announcements
+                .Where(a => a.UserId == adminId)
+                .OrderByDescending(a => a.Time)
+                .Select(a => new AnnouncementVO
+                {
+                    AnnouncementId = a.AnnouncementId,
+                    Title = a.Title,
+                    Content = a.Content,
+                    Time = a.Time
+                }).AsNoTracking();
+            if (!String.IsNullOrEmpty(query))
+            {
+                announces = announces.Where(a => a.Title.Contains(query));
+            }
+
+            return announces;
+        }
+
+        //获取一条公告记录
+        public AnnouncementVO GetOneAnnounce(long adminId, long id)
+        {
+            var announce = _context.Announcements
+                .Where(a => a.AnnouncementId == id && a.UserId == adminId)
+                .Select(a => new AnnouncementVO
+                {
+                    AnnouncementId = a.AnnouncementId,
+                    Title = a.Title,
+                    Content = a.Content,
+                    Time = a.Time
+                })
+                .AsNoTracking()
+                .FirstOrDefault();
+            return announce;
+        }
+
+        //增加一条公告记录
+        public void AddAnnounce(long adminId, AnnouncementQO announceQO)
+        {
+            var newAnnounce = new Announcements
+            {
+                Content = announceQO.Content,
+                UserId = adminId,
+                Time = DateTime.Now,
+                Title = announceQO.Title
+            };
+            _context.Announcements.Add(newAnnounce);
+            _context.SaveChanges();
+        }
+
+        //更新一条公告记录
+        public bool UpdateAnnounce(long adminId, AnnouncementQO announceQO)
+        {
+            var announce = _context.Announcements.FirstOrDefault(a =>
+                a.UserId == adminId && a.AnnouncementId == announceQO.AnnouncementId);
+            if (announce == null) return false;
+            announce.Title = announceQO.Title;
+            announce.Content = announceQO.Content;
+            _context.SaveChanges();
+            return true;
+        }
+
+        //删除一条公告记录
+        public bool DeleteAnnounce(long adminId, long id)
+        {
+            var announce =
+                _context.Announcements.FirstOrDefault(a =>
+                    a.AnnouncementId == id && a.UserId == adminId);
+            if (announce == null) return false;
+            _context.Announcements.Remove(announce);
+            _context.SaveChanges();
+            return true;
+        }
     }
 }

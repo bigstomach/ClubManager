@@ -25,9 +25,28 @@ namespace ClubManager.Services
         {
             return _context.Clubs.Find(clubId).Name;
         }
-        
+
+        //获取本社团信息
+        public ClubVO GetClubInfo(long clubId)
+        {
+            var club = _context.Clubs
+                .Where(a => a.ClubId == clubId )
+                .Select(a => new ClubVO
+                {
+                    ClubId=a.ClubId,
+                    Name=a.Name,
+                    Description=a.Description,
+                    EstablishmentDate=a.EstablishmentDate,
+                    Type=a.Type,
+                    
+
+                })
+                .AsNoTracking()
+                .FirstOrDefault();
+            return club;
+        }
         //--------------------------------社团信息修改-----------------------------------
-        public bool UpdateClubInfo(long clubId, ClubQO ClQO)
+        public bool EditClubInfo(long clubId, ClubQO ClQO)
         {
             _context.Clubs.Find(clubId).Name = ClQO.Name;
             _context.Clubs.Find(clubId).Description = ClQO.Description;
@@ -37,11 +56,12 @@ namespace ClubManager.Services
         }
 
         //查看入社申请
-        public IQueryable<JoinClubVO> GetJoinClub(long clubId,string query)
+        public IQueryable<JoinClubVO> GetJoin(long clubId,string query)
         {
             var joinclub = (
                 from JoinClub in _context.JoinClub
                 where JoinClub.ClubId == clubId
+                orderby JoinClub.ApplyDate descending
                 select new JoinClubVO
                 {
                     ClubId=JoinClub.ClubId,
@@ -51,6 +71,38 @@ namespace ClubManager.Services
                     Status=JoinClub.Status
                 }).AsNoTracking();
             return joinclub;
+        }
+        //查看一个入社申请
+        public JoinClubVO GetOneJoin(long clubId, long StudentId)
+        {
+            var join = _context.JoinClub
+                .Where(a => a.ClubId == clubId && a.StudentId == StudentId)
+                .Select(a => new JoinClubVO
+                {
+                    ClubId = a.ClubId,
+                    StudentId = a.StudentId,
+                    ApplyDate = a.ApplyDate,
+                    ApplyReason = a.ApplyReason,
+                    Status =a.Status
+                })
+                .AsNoTracking()
+                .FirstOrDefault();
+            return join;
+        }
+        public void DeleteJoin(long clubId, long studentId)
+        {
+            var joinclub = _context.JoinClub.FirstOrDefault(a =>
+               a.ClubId == clubId && a.StudentId == studentId);
+            _context.JoinClub.Remove(joinclub);
+            _context.SaveChanges();
+         
+        }
+        public void OkJoin(long clubId, long studentId)
+        {
+            var joinclub = _context.JoinClub.FirstOrDefault(a =>
+               a.ClubId == clubId && a.StudentId == studentId);
+            joinclub.Status = true;
+            _context.SaveChanges();
         }
 
         //--------------------------------活动增删改查-----------------------------------
@@ -120,7 +172,7 @@ namespace ClubManager.Services
             return true;
         }
         
-        //获取活动成员列表
+        //获取审核通过的活动成员列表
         public IQueryable<MemberVO> GetActivityMem(long ActivityId, string query)
         {
             var members = (
@@ -129,7 +181,7 @@ namespace ClubManager.Services
                     on ParticipateActivity.StudentId equals stu.StudentId
                 join stuMeta in _context.StudentMeta
                     on stu.Number equals stuMeta.Number
-                where ParticipateActivity.ActivityId == ActivityId 
+                where ParticipateActivity.ActivityId == ActivityId && ParticipateActivity.Status==true
                 orderby stu.Number
                 select new MemberVO
                 {
@@ -147,7 +199,65 @@ namespace ClubManager.Services
 
             return members;
         }
-        
+        //获取待审核的活动成员列表
+        public IQueryable<MemberVO> GetWaitActivityMem(long ActivityId, string query)
+        {
+            var members = (
+                from ParticipateActivity in _context.ParticipateActivity
+                join stu in _context.Students
+                    on ParticipateActivity.StudentId equals stu.StudentId
+                join stuMeta in _context.StudentMeta
+                    on stu.Number equals stuMeta.Number
+                where ParticipateActivity.ActivityId == ActivityId && ParticipateActivity.Status == false
+                orderby stu.Number
+                select new MemberVO
+                {
+                    StudentId = stu.StudentId,
+                    Number = stu.Number,
+                    Name = stuMeta.Name,
+                    Major = stuMeta.Major,
+                    Grade = stuMeta.Grade,
+                    Phone = stu.Phone
+                }).AsNoTracking();
+            if (!String.IsNullOrEmpty(query))
+            {
+                members = members.Where(m => m.Name.Contains(query));
+            }
+
+            return members;
+        }
+        //获取一个待审核的活动人员
+        public ParticipateActivityVO GetOneWaitActivityMembers(long studentId, long activityId)
+        {
+            var part = _context.ParticipateActivity
+                .Where(a => a.StudentId == studentId && a.ActivityId == activityId && a.Status==false)
+                .Select(a => new ParticipateActivityVO
+                {
+                    StudentId = a.StudentId,
+                    ActivityId = a.ActivityId,
+                    ApplyDate = a.ApplyDate,
+                    ApplyReason = a.ApplyReason,
+                    Status = a.Status
+                })
+                .AsNoTracking()
+                .FirstOrDefault();
+            return part;
+        }
+        public void DeleteParticipate(long activityId, long studentId)
+        {
+            var part = _context.ParticipateActivity.FirstOrDefault(a =>
+               a.ActivityId == activityId && a.StudentId == studentId);
+            _context.ParticipateActivity.Remove(part);
+            _context.SaveChanges();
+
+        }
+        public void OkParticipate(long activityId, long studentId)
+        {
+            var part = _context.ParticipateActivity.FirstOrDefault(a =>
+               a.ActivityId == activityId && a.StudentId == studentId);
+            part.Status = true;
+            _context.SaveChanges();
+        }
         //--------------------------------公告增删改查-----------------------------------
 
         //获取公告列表
@@ -344,6 +454,7 @@ namespace ClubManager.Services
             var sponsorships = (
                 from Sponsorships in _context.Sponsorships
                 where Sponsorships.ClubId == clubId
+                orderby Sponsorships.ApplyDate descending
                 select new SponsorshipVO
                 {
                     SponsorshipId = Sponsorships.SponsorshipId,

@@ -106,9 +106,9 @@ namespace ClubManager.Controllers
         }
 
         //获取系统公告
-        [HttpPost("getAnnouncements")]
+        [HttpPost("getSysAnnouncements")]
         [ProducesResponseType(typeof(PaginatedList<AnnouncementVO>),200)]
-        public IActionResult GetAnnouncements([FromBody] PageQO pq)
+        public IActionResult GetSysAnnouncements([FromBody] PageQO pq)
         {
             var announces = _userService.GetAnnouncements();
             return Ok(PaginatedList<AnnouncementVO>.Create(announces, pq.PageNumber ?? 1, pq.PageSize));
@@ -124,6 +124,14 @@ namespace ClubManager.Controllers
             if (announce == null) return NotFound();
             return Ok(announce);
         }
-        
+
+        //根据社团Id获取社团公告
+        [HttpPost("getClubAnnouncements")]
+        [ProducesResponseType(typeof(PaginatedList<AnnouncementVO>), 200)]
+        public IActionResult GetClubAnnouncements([FromBody] PageQO pq,long ClubId)
+        {
+            var announces = _userService.GetClubAnnouncements(ClubId);
+            return Ok(PaginatedList<AnnouncementVO>.Create(announces, pq.PageNumber ?? 1, pq.PageSize));
+        }
     }
 }
