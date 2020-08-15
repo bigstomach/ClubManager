@@ -39,7 +39,7 @@ namespace ClubManager.Controllers
         //负责人获取本社团信息
         [HttpPost("getClubInfo")]
         [ProducesResponseType(typeof(ClubVO),200)]
-        public IActionResult GetClubInfo([FromBody] ClubQO aq)
+        public IActionResult GetClubInfo()
         {
             var clubId = Utils.GetCurrentUserId(this.User);
             var club = _managerService.GetClubInfo(clubId);
@@ -68,7 +68,7 @@ namespace ClubManager.Controllers
         }
 
         // 查看一个入社申请
-        [HttpPost("getOneJoin")]
+        [HttpPost("getOneJoin/{studentId}")]
         [ProducesResponseType(typeof(JoinClubVO), 200)]
         public IActionResult GetOneJoin(long studentId)
         {
@@ -77,7 +77,7 @@ namespace ClubManager.Controllers
             return Ok(join);
         }
         //入社审核结果
-        [HttpPost("joinResult")]
+        [HttpPost("joinResult/{studentId}")]
         [ProducesResponseType(404)]
         [ProducesResponseType(200)]
         public IActionResult JoinResult(JoinClubStatusQO newStatus,long studentId)
@@ -94,6 +94,19 @@ namespace ClubManager.Controllers
                 return Ok();
             }
         
+        }
+
+
+
+        //消息发送
+        [HttpPost("sendMessage")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult SendMessage([FromBody] MessageQO message)
+        {
+            var exist = _managerService.SendMessage(message);
+            if (exist) return Ok();
+            else return NotFound();
         }
         // ---------------------------------------------------------------------------------------
         // ------------------------------------活动管理--------------------------------------------
@@ -175,7 +188,7 @@ namespace ClubManager.Controllers
             return Ok(PaginatedList<MemberVO>.Create(memb, pq.PageNumber ?? 1, pq.PageSize));
         }
         //查看待审核活动人员
-        [HttpPost("getWaitActivityMembers")]
+        [HttpPost("getWaitActivityMembers/{ActivityId}")]
         [ProducesResponseType(typeof(PaginatedList<MemberVO>), 200)]
         public IActionResult GetWaitActivityMembers([FromBody] PageQO pq, long ActivityId)
         {
@@ -183,27 +196,27 @@ namespace ClubManager.Controllers
             return Ok(PaginatedList<MemberVO>.Create(memb, pq.PageNumber ?? 1, pq.PageSize));
         }
         // 查看一个参加活动申请
-        [HttpPost("getOneWaitActivityMembers")]
+        [HttpPost("getOneWaitActivityMember")]
         [ProducesResponseType(typeof(ParticipateActivityVO), 200)]
-        public IActionResult GetOneWaitActivityMembers(long studentId,long activityId)
+        public IActionResult GetOneWaitActivityMember(OneWaitActivityMemberQO aq)
         {
-            var part = _managerService.GetOneWaitActivityMembers( studentId,activityId);
+            var part = _managerService.GetOneWaitActivityMembers( aq.studentId,aq.activityId);
             return Ok(part);
         }
         //参加活动审核结果
         [HttpPost("participateResult")]
         [ProducesResponseType(404)]
         [ProducesResponseType(200)]
-        public IActionResult ParticipateResult(ParticipateActivityStatusQO newStatus, long studentId,long activityId)
+        public IActionResult ParticipateResult(ParticipateActivityStatusQO newStatus)
         {
             if (newStatus.Status == false)
             {
-                _managerService.DeleteParticipate(activityId, studentId);
+                _managerService.DeleteParticipate(newStatus.ActivityId, newStatus.StudentId);
                 return Ok();
             }
             else
             {
-                _managerService.OkParticipate(activityId, studentId);
+                _managerService.OkParticipate(newStatus.ActivityId, newStatus.StudentId);
                 return Ok();
             }
 
@@ -227,7 +240,7 @@ namespace ClubManager.Controllers
             return Ok(PaginatedList<AnnouncementVO>.Create(announces, pq.PageNumber ?? 1, pq.PageSize));
         }
         
-        //根据id获取一条公告
+        //根据id获取自己社团的一条公告
         [HttpPost("getOneAnnouncement/{id}")]
         [ProducesResponseType(typeof(AnnouncementVO),200)]
         [ProducesResponseType(404)]

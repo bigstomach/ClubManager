@@ -237,14 +237,14 @@ namespace ClubManager.Controllers
             return Ok(PaginatedList<AnnouncementVO>.Create(announces, pq.PageNumber ?? 1, pq.PageSize));
         }
 
-        //根据id获取一条公告
-        [HttpPost("getOneAnnouncement/{id}")]
+        //根据公告id获取一条公告
+        [HttpPost("getOneAnnouncement/{announcementId}")]
         [ProducesResponseType(typeof(AnnouncementVO), 200)]
         [ProducesResponseType(404)]
-        public IActionResult GetOneAnnouncement(long id)
+        public IActionResult GetOneAnnouncement(long announcementId)
         {
             var adminId = Utils.GetCurrentUserId(this.User);
-            var announce = _adminService.GetOneAnnounce(adminId, id);
+            var announce = _adminService.GetOneAnnounce(adminId, announcementId);
             if (announce == null)
             {
                 return NotFound();
@@ -266,7 +266,7 @@ namespace ClubManager.Controllers
         //-------------------------------------公告更新--------------------------------------------
         //更新一条公告记录
         //根据id更新一条活动记录
-        [HttpPost("updateOneAnnouncement/{id}")]
+        [HttpPost("updateOneAnnouncement")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public IActionResult UpdateOneAnnouncement([FromBody] AnnouncementQO aq)

@@ -126,7 +126,7 @@ namespace ClubManager.Controllers
         }
 
         //根据社团Id获取社团公告
-        [HttpPost("getClubAnnouncements")]
+        [HttpPost("getClubAnnouncements/{ClubId}")]
         [ProducesResponseType(typeof(PaginatedList<AnnouncementVO>), 200)]
         public IActionResult GetClubAnnouncements([FromBody] PageQO pq,long ClubId)
         {

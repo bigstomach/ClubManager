@@ -93,7 +93,9 @@ namespace ClubManager.Services
         {
             var joinclub = _context.JoinClub.FirstOrDefault(a =>
                a.ClubId == clubId && a.StudentId == studentId);
+          
             _context.JoinClub.Remove(joinclub);
+           
             _context.SaveChanges();
          
         }
@@ -102,9 +104,29 @@ namespace ClubManager.Services
             var joinclub = _context.JoinClub.FirstOrDefault(a =>
                a.ClubId == clubId && a.StudentId == studentId);
             joinclub.Status = true;
+          
+           
             _context.SaveChanges();
         }
-
+        //发送消息
+        public bool SendMessage(MessageQO message)
+        {
+            var User = _context.Users.Find(message.UserId);
+            if (string.IsNullOrEmpty(message.Title)) return false;//设置消息的标题不能为空
+            if (User == null) return false;
+            var Message = new Messages
+            {
+                MessageId = _context.Messages.Select(m => m.MessageId).Max() + 1,
+                UserId = message.UserId,
+                Title = message.Title,
+                Content = message.Content,
+                Time = DateTime.Now,
+                Read = false
+            };
+            _context.Messages.Add(Message);
+            _context.SaveChanges();
+            return true;
+        }
         //--------------------------------活动增删改查-----------------------------------
 
         //获取活动列表

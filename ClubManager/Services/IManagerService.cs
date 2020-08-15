@@ -43,5 +43,6 @@ namespace ClubManager.Services
         void DeleteParticipate(long activityId, long studentId);
 
         void OkParticipate(long activityId, long studentId);
+        bool SendMessage(MessageQO message);
     }
 }

@@ -285,7 +285,7 @@ namespace ClubManager.Services
 
         //--------------------------------公告增删改查-----------------------------------
 
-        //获取公告列表
+        //获取自己写的系统公告列表
         public IQueryable<AnnouncementVO> GetAnnounces(long adminId, string query)
         {
             var announces = _context.Announcements
