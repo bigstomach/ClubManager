@@ -30,7 +30,7 @@ namespace ClubManager.Services
             return name;
         }
 
-        //根据学生id获取全部个人信息------------------
+        //根据学生id获取全部个人信息
         public IQueryable<StudentAllVO> GetStudentInfo(long studentId)
         {
             var stu = (
@@ -39,16 +39,14 @@ namespace ClubManager.Services
                       where stu1.StudentId == studentId
                       select new StudentAllVO
                       {
-                          StudentId = stu1.StudentId,
                           Number = stu1.Number,
                           Name = meta.Name,
                           Grade = meta.Grade,
                           Major = meta.Major,
                           Status = meta.Status,
-                         /* Phone = stu1.Phone,
+                          Phone = stu1.Phone,
                           Signature = stu1.Signature,
-                          Mail = stu1.Mail,
-                          Birthday = stu1.Birthday,*/
+                          Mail=stu1.Mail,
                       }).AsNoTracking();
             return stu;
         }
@@ -56,12 +54,12 @@ namespace ClubManager.Services
         //根据学生id修改个人信息-----------------------------------有问题
         public bool ChangeStudentInfo(long studentId, StudentsQO stuQO)
         {
-            var stu = _context.Students.FirstOrDefault(a =>
-                a.StudentId == studentId);
+            var stu = _context.Students.Find(studentId);
+            //var stu = _context.Students.FirstOrDefault(a =>
+            //    a.StudentId == studentId);
             if (stu == null)
                 return false;          //如果找不到该学生Id，返回失败
                                        
-            _context.Students.Attach(stu);
             stu.Phone = stuQO.Phone;
             stu.Signature = stuQO.Signature;
             stu.Mail = stuQO.Mail;
@@ -78,7 +76,7 @@ namespace ClubManager.Services
             if (User == null) return false;
             var Message = new Messages
             {
-                MessageId = _context.Messages.Select(m => m.MessageId).Max() + 1,
+                //MessageId = _context.Messages.Select(m => m.MessageId).Max() + 1,
                 UserId = message.UserId,
                 Title = message.Title,
                 Content = message.Content,
@@ -192,25 +190,50 @@ namespace ClubManager.Services
             _context.SaveChanges();
             return true;
         }
-        //获取活动信息
-        public IQueryable<ActivityVO> GetActivitysInfo(string query)
+        //获取已加入社团内部活动信息
+        public IQueryable<ActivityVO> GetInActivitiesInfo(long studentId,string query)
         {
-            var acts = _context.Activities
-                 .Select(s => new ActivityVO
+            DateTime time = DateTime.Now;
+            var acts = from stu in _context.Students
+                       join joinClub in _context.JoinClub on stu.StudentId equals joinClub.StudentId
+                       join act in _context.Activities on joinClub.ClubId equals act.ClubId
+                       where stu.StudentId == studentId && joinClub.Status == true&& act.Status==1 &&DateTime.Compare(time,act.EventTime)<0
+                       select new ActivityVO
                  {
-                     ActivityId = s.ActivityId,
-                     Name = s.Name,
-                     Description = s.Description,
-                     Place = s.Place,
-                     Suggestion = s.Suggestion
-                 });
+                     ActivityId = act.ActivityId,
+                     Name = act.Name,
+                     Description = act.Description,
+                     Place = act.Place,
+                     EventTime=act.EventTime
+                 };
             if (!String.IsNullOrEmpty(query))
             {
                 acts = acts.Where(s => s.Name.Contains(query));
             }
-
             return acts;
         }
+
+        //获取全部公开活动信息
+        public IQueryable<ActivityVO> GetOutActivitiesInfo(string query)
+        {
+            DateTime time = DateTime.Now;
+            var acts = from act in _context.Activities
+                       where act.IsPublic == true && act.Status == 1 && DateTime.Compare(time, act.EventTime) < 0
+                       select new ActivityVO
+                       {
+                           ActivityId = act.ActivityId,
+                           Name = act.Name,
+                           Description = act.Description,
+                           Place = act.Place,
+                           EventTime = act.EventTime
+                       };
+            if (!String.IsNullOrEmpty(query))
+            {
+                acts = acts.Where(s => s.Name.Contains(query));
+            }
+            return acts;
+        }
+
 
         //返回已参加活动
         public IQueryable<ActivityVO> SearchInActivity(long id, string query)
