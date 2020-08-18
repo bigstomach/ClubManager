@@ -155,13 +155,24 @@ namespace ClubManager.Controllers
         // ---------------------------------------------------------------------------------------
         // ------------------------------------活动部分--------------------------------------------
         // ---------------------------------------------------------------------------------------  
-        //获取全部活动信息并分页
-        [HttpPost("getActivityInfo")]
+        //获取已加入社团内部活动信息并分页
+        [HttpPost("getInActivityInfo")]
         [ProducesResponseType(typeof(PaginatedList<ActivityVO>), 200)]
         [ProducesResponseType(404)]
-        public IActionResult GetActivityInfo([FromBody] PageQO pq)
+        public IActionResult GetInActivityInfo([FromBody] PageQO pq)
         {
-            var acts = _studentService.GetActivitysInfo(pq.Query);
+            var studentId = Utils.GetCurrentUserId(this.User);
+            var acts = _studentService.GetInActivitiesInfo(studentId,pq.Query);
+            return Ok(PaginatedList<ActivityVO>.Create(acts, pq.PageNumber ?? 1, pq.PageSize));
+        }
+
+        //获取所有公开活动信息并分页
+        [HttpPost("getOutActivityInfo")]
+        [ProducesResponseType(typeof(PaginatedList<ActivityVO>), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetOutActivityInfo([FromBody] PageQO pq)
+        {
+            var acts = _studentService.GetOutActivitiesInfo( pq.Query);
             return Ok(PaginatedList<ActivityVO>.Create(acts, pq.PageNumber ?? 1, pq.PageSize));
         }
 
@@ -169,7 +180,7 @@ namespace ClubManager.Controllers
         [HttpPost("inActivity")]
         [ProducesResponseType(typeof(PaginatedList<ActivityVO>), 200)]
         [ProducesResponseType(404)]
-        public IActionResult inActivity([FromBody] PageQO pq)
+        public IActionResult InActivity([FromBody] PageQO pq)
         {
             var userId = Utils.GetCurrentUserId(this.User);
             var acts = _studentService.SearchInActivity(userId, pq.Query);
