@@ -54,6 +54,13 @@ namespace ClubManager.Services
             _context.SaveChanges();
             return true;
         }
+         //--------------------------------社团解散-----------------------------------
+        public bool DissolveClub(long clubId)
+        {
+            _context.Clubs.Find(clubId).Status = false;
+            _context.SaveChanges();
+            return true;
+        }
 
         //查看入社申请
         public IQueryable<JoinClubVO> GetJoin(long clubId,string query)
