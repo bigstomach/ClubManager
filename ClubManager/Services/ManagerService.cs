@@ -434,7 +434,7 @@ namespace ClubManager.Services
         }
         
         //查看历届社长
-        public IQueryable<ManagerVO> GetManagers(long clubId,string query)
+        public IQueryable<ManagerVO> GetManagers(long clubId, string query)
         {
             var mans = (from m in _context.Managers
                 join s in _context.Students on m.StudentId equals s.StudentId
@@ -443,7 +443,8 @@ namespace ClubManager.Services
                 orderby m.Term descending
                 select new ManagerVO
                 {
-                    Term = m.Term, Number = s.Number, Grade = sm.Grade, Major = sm.Major, Phone = s.Phone
+                    Term = m.Term, Number = s.Number, Name = sm.Name, Grade = sm.Grade, Major = sm.Major,
+                    Phone = s.Phone
                 }).AsNoTracking();
             if (!String.IsNullOrEmpty(query))
             {

@@ -207,7 +207,7 @@ namespace ClubManager
                     .HasName("SYS_C0011362")
                     .IsUnique();
 
-                entity.Property(e => e.Term).HasColumnType("NUMBER(4)");
+                entity.Property(e => e.Term).HasColumnType("NUMBER(9)");
 
                 entity.HasOne(d => d.Club)
                     .WithMany(p => p.Managers)
