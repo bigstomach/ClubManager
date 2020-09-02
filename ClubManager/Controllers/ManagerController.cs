@@ -56,7 +56,16 @@ namespace ClubManager.Controllers
             _managerService.EditClubInfo(clubId, aq);
             return Ok();
         }
-
+         // ---------------------------------------------------------------------------------------
+        // ------------------------------------社团解散-----------------------------------------
+        [HttpPost("dissolveClub")]
+        [ProducesResponseType(200)]
+        public IActionResult DissolveClub()
+        {
+            var clubId = Utils.GetCurrentUserId(this.User);
+            _managerService.DissolveClub(clubId);
+            return Ok();
+        }
         // 查看入社申请
         [HttpPost("getJoin")]
         [ProducesResponseType(typeof(PaginatedList<JoinClubVO>), 200)]
