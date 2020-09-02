@@ -29,6 +29,7 @@ namespace ClubManager.Services
         IQueryable<ManagerVO> GetManagers(long clubId, string query);
         void AddOneSponsorship(long clubId,SponsorshipQO sponsorshipQO);
         bool EditClubInfo(long clubId, ClubQO ClQO);
+        bool DissolveClub(long clubId);
         IQueryable<SponsorshipVO> GetClubHadSponsorship(long clubId,string Query);
         IQueryable<MemberVO> GetActivityMem(long ActivityId, string query);
 
