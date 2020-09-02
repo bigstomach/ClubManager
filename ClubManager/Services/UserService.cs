@@ -37,7 +37,7 @@ namespace ClubManager.Services
             if (user == null)
                 return null;
 
-            var authUser = new AuthUser {UserId = user.UserId, UserType = user.UserType};
+            var authUser = new AuthUser {UserId = user.UserId, UserType = user.UserType,ImgUrl = user.ImgUrl};
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret));
 
@@ -66,6 +66,7 @@ namespace ClubManager.Services
             var number = reg.Number;
             var password = reg.Password;
             var username = reg.Username;
+            var imgUrl = reg.ImgUrl;
             var stu = _context.StudentMeta.FirstOrDefault(s => s.Number == number);
             if (stu == null)
             {
@@ -85,10 +86,9 @@ namespace ClubManager.Services
                 throw new InvalidCastException("此用户名已存在");
             }
 
-            var newUser = new Users {UserName = username, Password = password, UserType = 0};
+            var newUser = new Users {UserName = username, Password = password, UserType = 0, ImgUrl = imgUrl};
             _context.Users.Add(newUser);
-            _context.SaveChanges();
-
+            
             var newStudent = new Students
                 {StudentId = _context.Users.First(u => u.UserName == username).UserId, Number = number};
             _context.Students.Add(newStudent);

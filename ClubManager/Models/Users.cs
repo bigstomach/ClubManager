@@ -15,6 +15,7 @@ namespace ClubManager
         public string UserName { get; set; }
         public string Password { get; set; }
         public int UserType { get; set; }
+        public string ImgUrl { get; set; }
 
         public virtual Administrators Administrators { get; set; }
         public virtual Clubs Clubs { get; set; }

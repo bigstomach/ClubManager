@@ -28,6 +28,7 @@ namespace ClubManager
         public virtual DbSet<Students> Students { get; set; }
         public virtual DbSet<Users> Users { get; set; }
         
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
@@ -355,8 +356,6 @@ namespace ClubManager
 
                 entity.Property(e => e.StudentId).ValueGeneratedNever();
 
-                entity.Property(e => e.Avatar).HasColumnType("BLOB");
-
                 entity.Property(e => e.Birthday).HasColumnType("DATE");
 
                 entity.Property(e => e.Mail).HasColumnType("NVARCHAR2(50)");
@@ -390,6 +389,10 @@ namespace ClubManager
                 entity.HasIndex(e => e.UserName)
                     .HasName("SYS_C0011300")
                     .IsUnique();
+
+                entity.Property(e => e.ImgUrl)
+                    .HasColumnType("NVARCHAR2(2000)")
+                    .HasDefaultValueSql("('https://tongji4m3.oss-cn-beijing.aliyuncs.com/OIP.jpg')");
 
                 entity.Property(e => e.Password)
                     .IsRequired()

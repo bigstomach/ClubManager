@@ -15,7 +15,6 @@ namespace ClubManager
         public long StudentId { get; set; }
         public int Number { get; set; }
         public string Phone { get; set; }
-        public byte[] Avatar { get; set; }
         public string Signature { get; set; }
         public string Mail { get; set; }
         public DateTime? Birthday { get; set; }
