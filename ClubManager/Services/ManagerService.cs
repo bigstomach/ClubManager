@@ -414,21 +414,16 @@ namespace ClubManager.Services
         }
 
         //社长换届
-        public bool ChangeManager(long clubId,long id)
+        public bool ChangeManager(long clubId, long id)
         {
-            var manager = _context.Managers.FirstOrDefault(m => m.Term == DateTime.Now.Year+1 && m.ClubId==clubId);
+            var manager = _context.Managers.FirstOrDefault(m => m.Term == DateTime.Now.Year + 1 && m.ClubId == clubId);
             if (manager != null)
             {
-                manager.StudentId = id;
+                _context.Managers.Remove(manager);
             }
-            else
-            {
-                var newManager = new Managers
-                {
-                    ClubId = clubId, StudentId = id, Term = DateTime.Now.Year + 1
-                };
-                _context.Managers.Add(newManager);
-            }
+            _context.Managers.Add(new Managers {
+                ClubId = clubId, StudentId = id, Term = DateTime.Now.Year + 1
+            });
             _context.SaveChanges();
             return true;
         }
