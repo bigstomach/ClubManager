@@ -86,13 +86,27 @@ namespace ClubManager.Services
                 throw new InvalidCastException("此用户名已存在");
             }
 
-            var newUser = new Users {UserName = username, Password = password, UserType = 0, ImgUrl = imgUrl};
-            _context.Users.Add(newUser);
-            
-            var newStudent = new Students
-                {StudentId = _context.Users.First(u => u.UserName == username).UserId, Number = number};
-            _context.Students.Add(newStudent);
-            _context.SaveChanges();
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var newUser = new Users {UserName = username, Password = password, UserType = 0, ImgUrl = imgUrl};
+                    _context.Users.Add(newUser);
+                    _context.SaveChanges();
+
+                    var newStudent = new Students
+                        {StudentId = _context.Users.First(u => u.UserName == username).UserId, Number = number};
+                    _context.Students.Add(newStudent);
+                    _context.SaveChanges();
+
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
         }
 
 
