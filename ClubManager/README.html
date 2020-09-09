@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>ClubManager 开发流程</title>
+        <style>
+</style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+        <link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        
+        <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        
+    </head>
+    <body class="vscode-light">
+        <h1 id="clubmanager-开发流程">ClubManager 开发流程</h1>
+<h2 id="datagrip">DataGrip</h2>
+<ol>
+<li>左边栏&quot;+&quot;号选择&quot;Data Source&quot;-&gt;Oracle<br>
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E9%80%89%E6%8B%A9%E6%95%B0%E6%8D%AE%E5%BA%93.png" alt=""></li>
+<li>在弹出窗口中的红色框内输入相应的数据，密码和用户名相同，尝试连接成功后apply<br>
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93.png" alt=""></li>
+<li>能够看到左边栏出现数据库和相关表结构，展开可以查看字段，双击能够查看内容(没填几个，就学生用户社团一点点)<br>
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E5%B7%A6%E8%BE%B9%E6%A0%8F.png" alt=""></li>
+<li>增加删除记录(点击&quot;+&quot;/&quot;-&quot;填好之后点击绿色的箭头和绿色的✅)，修改差不多就修改相应的记录再重复绿色的操作<br>
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E5%A2%9E%E5%8A%A0%E5%88%A0%E9%99%A4%E8%AE%B0%E5%BD%95.png" alt=""></li>
+<li>导出建表语句<br>
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E6%9F%A5%E7%9C%8Bddl.png" alt=""></li>
+<li>查看建表语句<br>
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E7%9C%9F%E6%9F%A5%E7%9C%8B.png" alt=""></li>
+<li>&quot;+&quot;下新建&quot;Query Console&quot;,然后可以写sql语句对表进行操作，不要擅自把表结构改了！！<br>
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E6%96%B0%E5%BB%BAqueryconsole.png" alt=""></li>
+</ol>
+<h2 id="协作方式">协作方式</h2>
+<p>采用合作者方式，具体方法看链接对合作者方式的介绍
+<a href="https://ideepspace.gitee.io/learngit/docs/gitduo-ren-xie-zuo.html">https://ideepspace.gitee.io/learngit/docs/gitduo-ren-xie-zuo.html</a><br>
+注意需要先<strong>创建并切换到新的分支</strong></p>
+<pre><code class="language-bash"><div>$ git checkout -b feature_xxxx //xxxx需要改成你负责的功能
+</div></code></pre>
+<p>写完一个功能之后，每次提交时提交这个新分支</p>
+<pre><code class="language-bash"><div>$ git push origin feature_xxxx //xxxx需要改成你负责的功能
+</div></code></pre>
+<p>每次提交完新的功能找一个人来review、提出意见，最后找我来合并
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E5%B0%8F%E7%BB%93.png" alt=""></p>
+<h2 id="c-net-core">c# .net core</h2>
+<h3 id="项目文件组织">项目文件组织</h3>
+<p><img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E7%BB%84%E7%BB%87.png" alt=""></p>
+<ul>
+<li>Dependencies 里面是项目的依赖，依赖的框架sdk，依赖的许多包</li>
+<li>Properties 里面是项目启动时的配置</li>
+<li>Controllers 是处理接口的一些类</li>
+<li>Helpers 一些辅助的工具类</li>
+<li>Models 数据库表所对应的类，类的属性就是数据库表中的字段</li>
+<li>QueryObjects 查询对象类，提供给Controllers的接口使用</li>
+<li>Services 业务逻辑层，controller通过调用Services的接口来完成对数据库的操作，增删改查操作都在这里写</li>
+<li>ViewObjects 视图对象类，也就是返回给前端的数据的类，也是提供给Controllers的接口使用</li>
+<li>program.cs是程序运行入口，startup.cs是运行时的配置包含服务注入等</li>
+</ul>
+<p><strong>总的来说，包含接口层Controllers，业务服务层Services，数据库访问层ModelContext(EF框架为我们处理好了)</strong></p>
+<h3 id="工作步骤">工作步骤</h3>
+<p>即完成一个接口需要的操作，以inClub接口为例</p>
+<ol>
+<li>在controllers文件中找到接口应该是哪类用户的操作，inClub应该是学生查看自己所处社团的操作，因此将接口写在StudentsController.cs文件中
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E5%AD%A6%E7%94%9F%E6%8E%A7%E5%88%B6%E5%99%A8.png" alt="">
+在类上面的注释的含义见下，都已经写好
+<ol>
+<li>根据角色确定权限，此控制器类的角色是Student，只有Student才能调用此控制器类中的接口</li>
+<li>查询的url，即baseUrl/[controller],这里controller就是student</li>
+<li>这是个API控制器</li>
+</ol>
+</li>
+<li>构造函数实际上就是说明依赖了IStudentServices这个业务逻辑接口类</li>
+<li>只需要写的就是接口的实现
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E6%8E%A5%E5%8F%A3.png" alt=""></li>
+</ol>
+<ul>
+<li>注释含义
+<ol>
+<li>具体接口的url连接字符串是&quot;inClub&quot;，因此此url就应该是https://localhost:5001/communitySystem/Student/inClub</li>
+<li>这是注释接口返回的statusCode和相应的返回类型，比如这里指的是返回200成功，并且返回类型为PaginatedList<ClubVO>类型(进行分页过的返回类型)的json数据</li>
+</ol>
+</li>
+<li>具体方法
+<ol>
+<li>返回类型一般都写IActionResult，这样返回时可以写Ok()，NotFound(),BadRequest(),NoContent()，括号里面写上返回的参数</li>
+<li>传入参数也就是前端请求的参数，请封装在类中，把这个类放在QueryObjects文件夹中，注意大小写规范取名要和接口名相关并且最后加上QO，如果参数只有一个可以不封装直接写</li>
+<li>Utils就是工具类，提供获取当前用户的id和username来确认身份</li>
+<li>__studentService.SearchInClub就是Services业务逻辑层的接口，需要在IStudentService声明，在StudentService写出方法的具体实现
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E6%8E%A5%E5%8F%A3%E5%A3%B0%E6%98%8E.png" alt="">
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E5%AE%9E%E7%8E%B0.png" alt=""></li>
+<li>具体对数据库的增删改查可以结合着各种service文件看如何写
+<ul>
+<li>增删改可以看AdminService.cs写的</li>
+<li>查询的话可以查一下linq语法，这里贴个链接 <a href="https://docs.microsoft.com/zh-cn/ef/core/querying/complex-query-operators">https://docs.microsoft.com/zh-cn/ef/core/querying/complex-query-operators</a> , <a href="https://docs.microsoft.com/zh-cn/ef/core/querying/raw-sql">https://docs.microsoft.com/zh-cn/ef/core/querying/raw-sql</a>, <a href="https://docs.microsoft.com/zh-cn/ef/core/querying/related-data">https://docs.microsoft.com/zh-cn/ef/core/querying/related-data</a>, 可以把文档相关的都看一看</li>
+<li>这个有些不太相似但是语法可以参考 <a href="https://docs.microsoft.com/zh-cn/aspnet/core/data/ef-rp/read-related-data?view=aspnetcore-2.2&amp;tabs=visual-studio">https://docs.microsoft.com/zh-cn/aspnet/core/data/ef-rp/read-related-data?view=aspnetcore-2.2&amp;tabs=visual-studio</a></li>
+<li>最好linq和原始sql都能写</li>
+</ul>
+</li>
+<li>最后Controller接口的返回类型请也封装成类，放在ViewObjects文件夹中，注意规范，分页的就直接仿照上面图的写法，具体实现已经完成</li>
+</ol>
+</li>
+</ul>
+<h2 id="postman">postman</h2>
+<p>也就是用于测试接口的工具
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/postman.png" alt=""></p>
+<ul>
+<li>选择请求方法、请求地址、点击body写入请求参数，send之后右边栏会显示返回参数，要是5开头那就是发生内部错误请在后端的output查看</li>
+<li>!!!注意每次测试前需要拿接口相关的用户来登录(如果用户类型错误会返回没有权限)，获取token，然后测试时需要在headers添加一个字段key是Authorization，value是bearer加上token的字符串，否则会返回401没有身份认证<br>
+<img src="file:////Users/bigstomach/RiderProjects/ClubManager/docs/%E6%9D%83%E9%99%90.png" alt=""></li>
+</ul>
+
+    </body>
+    </html>
