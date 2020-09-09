@@ -46,8 +46,8 @@ namespace ClubManager.Services
                           Status = meta.Status,
                           Phone = stu1.Phone,
                           Signature = stu1.Signature,
-                          Mail=stu1.Mail,
-                          Birthday=stu1.Birthday,
+                          Mail = stu1.Mail,
+                          Birthday = stu1.Birthday
                       }).AsNoTracking();
             return stu;
         }

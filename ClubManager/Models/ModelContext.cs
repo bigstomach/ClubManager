@@ -147,9 +147,7 @@ namespace ClubManager
 
                 entity.Property(e => e.ClubId).ValueGeneratedNever();
 
-                entity.Property(e => e.Description)
-                    .IsRequired()
-                    .HasColumnType("NVARCHAR2(2000)");
+                entity.Property(e => e.Description).HasColumnType("CLOB");
 
                 entity.Property(e => e.EstablishmentDate).HasColumnType("DATE");
 

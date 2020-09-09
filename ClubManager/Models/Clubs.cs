@@ -15,13 +15,11 @@ namespace ClubManager
 
         public long ClubId { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
         public DateTime EstablishmentDate { get; set; }
-
-       
         public int Type { get; set; }
         public byte[] Logo { get; set; }
         public bool Status { get; set; }
+        public string Description { get; set; }
 
         public virtual Users Club { get; set; }
         public virtual ICollection<Activities> Activities { get; set; }
