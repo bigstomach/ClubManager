@@ -47,11 +47,12 @@ namespace ClubManager.Services
                           Phone = stu1.Phone,
                           Signature = stu1.Signature,
                           Mail=stu1.Mail,
+                          Birthday=stu1.Birthday,
                       }).AsNoTracking();
             return stu;
         }
 
-        //根据学生id修改个人信息-----------------------------------有问题
+        //根据学生id修改个人信息
         public bool ChangeStudentInfo(long studentId, StudentsQO stuQO)
         {
             var stu = _context.Students.Find(studentId);
@@ -153,9 +154,19 @@ namespace ClubManager.Services
         //返回已加入社团
         public IQueryable<ClubVO> SearchInClub(long id, string query)
         {
+            var Pname = from man in _context.Managers
+                        join stu in _context.Students on man.StudentId equals stu.StudentId
+                        join meta in _context.StudentMeta on stu.Number equals meta.Number
+                        where man.Term == DateTime.Now.Year
+                        select new PresidentVO
+                        {
+                            ClubId = man.ClubId,
+                            Name = meta.Name,
+                        };
             var clubs = from stu in _context.Students
                         join joinClub in _context.JoinClub on stu.StudentId equals joinClub.StudentId
                         join club in _context.Clubs on joinClub.ClubId equals club.ClubId
+                        join pname in Pname on club.ClubId equals pname.ClubId
                         where stu.StudentId == id && joinClub.Status == true
                         select new ClubVO
                         {
@@ -163,16 +174,9 @@ namespace ClubManager.Services
                             Name = club.Name,
                             Description = club.Description,
                             EstablishmentDate = club.EstablishmentDate,
-                            PresidentName =
-                                (from man in _context.Managers
-                                 join stu in _context.Students on man.StudentId equals stu.StudentId
-                                 join meta in _context.StudentMeta on stu.Number equals meta.Number
-                                 where man.ClubId == club.ClubId && man.Term == DateTime.Now.Year
-                                 select meta.Name)
-                                .AsNoTracking().ToString(),
+                            PresidentName =pname.Name,
                             Type = club.Type,
                         };
-
             if (!String.IsNullOrEmpty(query))
             {
                 clubs = clubs.Where(c => c.Name.Contains(query));
@@ -197,14 +201,17 @@ namespace ClubManager.Services
             var acts = from stu in _context.Students
                        join joinClub in _context.JoinClub on stu.StudentId equals joinClub.StudentId
                        join act in _context.Activities on joinClub.ClubId equals act.ClubId
+                       join club in _context.Clubs on act.ClubId equals club.ClubId
                        where stu.StudentId == studentId && joinClub.Status == true&& act.Status==1 &&DateTime.Compare(time,act.EventTime)<0
+                       //确保是已加社团的活动，保证活动审核通过且活动举办日期未过
                        select new ActivityVO
                  {
                      ActivityId = act.ActivityId,
                      Name = act.Name,
                      Description = act.Description,
                      Place = act.Place,
-                     EventTime=act.EventTime
+                     EventTime=act.EventTime,
+                     ClubName=club.Name
                  };
             if (!String.IsNullOrEmpty(query))
             {
@@ -218,6 +225,7 @@ namespace ClubManager.Services
         {
             DateTime time = DateTime.Now;
             var acts = from act in _context.Activities
+                       join club in _context.Clubs on act.ClubId equals club.ClubId
                        where act.IsPublic == true && act.Status == 1 && DateTime.Compare(time, act.EventTime) < 0
                        select new ActivityVO
                        {
@@ -225,7 +233,8 @@ namespace ClubManager.Services
                            Name = act.Name,
                            Description = act.Description,
                            Place = act.Place,
-                           EventTime = act.EventTime
+                           EventTime = act.EventTime,
+                           ClubName = club.Name
                        };
             if (!String.IsNullOrEmpty(query))
             {
@@ -233,14 +242,13 @@ namespace ClubManager.Services
             }
             return acts;
         }
-
-
         //返回已参加活动
         public IQueryable<ActivityVO> SearchInActivity(long id, string query)
         {
             var acts = from stu in _context.Students
                        join joinAct in _context.ParticipateActivity on stu.StudentId equals joinAct.StudentId
                        join Act in _context.Activities on joinAct.ActivityId equals Act.ActivityId
+                       join club in _context.Clubs on Act.ClubId equals club.ClubId
                        where stu.StudentId == id && joinAct.Status == true
                        select new ActivityVO
                        {
@@ -248,9 +256,9 @@ namespace ClubManager.Services
                            Name = Act.Name,
                            Description = Act.Description,
                            Place = Act.Place,
-                           Suggestion = Act.Suggestion
+                           Suggestion = Act.Suggestion,
+                           ClubName = club.Name
                        };
-
             if (!String.IsNullOrEmpty(query))
             {
                 acts = acts.Where(c => c.Name.Contains(query));
