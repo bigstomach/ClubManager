@@ -57,7 +57,7 @@ namespace ClubManager.Services
          //--------------------------------社团解散-----------------------------------
         public bool DissolveClub(long clubId)
         {
-            _context.Clubs.Find(clubId).Status = false;
+            _context.Clubs.Find(clubId).Status = 0;
             _context.SaveChanges();
             return true;
         }

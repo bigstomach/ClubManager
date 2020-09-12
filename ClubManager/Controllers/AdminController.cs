@@ -129,7 +129,17 @@ namespace ClubManager.Controllers
         // ------------------------------------新社团审核-----------------------------------------
         // --------------------------------------------------------------------------------------- 
 
-        //获取社团列表(待完善）
+        //获取社团列表
+        [HttpPost("getClubs")]
+        [ProducesResponseType(typeof(PaginatedList<ClubVO>), 200)]
+        [ProducesResponseType(404)]
+        public ActionResult<PaginatedList<ClubVO>> GetClubs([FromBody] ClubListQO ClubPage)
+        {
+            if (ClubPage.Status != "unaudited" && ClubPage.Status != "dissolved" && ClubPage.Status != "pass" && ClubPage.Status != "all") return NotFound();
+            var Club = _adminService.GetClubs(ClubPage.Status, ClubPage.PageQO.Query);
+            if (Club == null) return NotFound();
+            else return Ok(PaginatedList<ClubVO>.Create(Club, ClubPage.PageQO.PageNumber ?? 1, ClubPage.PageQO.PageSize));
+        }
 
         //获取社团详细信息
         [HttpPost("getClubDetails")]
@@ -153,7 +163,17 @@ namespace ClubManager.Controllers
             else return NotFound();
         }
 
-        //社团审核状态更新(待完善）
+        //社团审核状态更新
+        [HttpPost("updateClubStatus")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateClubStatus([FromBody] ClubStatusQO newClubStatus)
+        {
+            if (newClubStatus.Status == 0) return NotFound();
+            var exist = _adminService.UpdateClubStatus(newClubStatus);
+            if (exist) return Ok();
+            else return NotFound();
+        }
 
         // ---------------------------------------------------------------------------------------
         // ------------------------------------学生元信息管理-------------------------------------
