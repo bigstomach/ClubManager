@@ -18,6 +18,6 @@ namespace ClubManager.ViewObjects
         public int Grade { get; set; }
         public string Major { get; set; }
 
-        public int Status { get; set; } 
+        //public long Status { get; set; } 这个在数据库里面还没，所以先用注释
     }
 }
