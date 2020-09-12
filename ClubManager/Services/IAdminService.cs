@@ -16,11 +16,11 @@ namespace ClubManager.Services
         ActivityVO GetActivityDetails(long id);
         bool UpdateActSuggestion(ActivitySuggestionQO newActSuggestion, long UserId);
         bool UpdateActStatus(ActivityStatusQO newActStatus, long UserId);
-        //社团审核(待完善）
-
+        //社团审核
+        IQueryable<ClubVO> GetClubs(string status, string query);
         ClubVO GetClubDetails(long ClubId,long ManagerId);
         bool SendMessage(MessageQO message);
-
+        bool UpdateClubStatus(ClubStatusQO newClubStatus);
         //学生管理
         IQueryable<StudentMetaVO> GetStudentMetas(string status, string query);
         bool UpdateStudentMeta(StudentMetaQO newStudentMeta);
