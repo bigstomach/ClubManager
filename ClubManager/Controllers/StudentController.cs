@@ -1,3 +1,4 @@
+using System.Linq;
 using ClubManager.helpers;
 using ClubManager.Services;
 using ClubManager.Helpers;
@@ -61,9 +62,6 @@ namespace ClubManager.Controllers
                 IsSuccess = _studentService.ChangeStudentInfo(studentId, stuQO)
             };
             return Ok(success);
-            // bool success = _studentService.ChangeStudentInfo(studentId, stuQO);
-            //if (success) return Ok(new { msg = "学生信息修改成功" });
-            //return NotFound();
         }
 
         //获取已加入社团的公告
@@ -111,6 +109,19 @@ namespace ClubManager.Controllers
             return Ok(PaginatedList<ClubVO>.Create(clubs, pq.PageNumber ?? 1, pq.PageSize));
         }
 
+        //加入社团之前先通过社团id判断是否加入或已申请
+        [HttpPost("judgeClubJoin/{id}")]
+        [ProducesResponseType(typeof(SuccessVO), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult JudgeClubJoin(long id)
+        {
+            var studentId = Utils.GetCurrentUserId(this.User);
+            SuccessVO success = new SuccessVO
+            {
+                IsSuccess = _studentService.JudgeClubJoin(id,studentId)
+            };
+            return Ok(success);
+        }
         //学生申请加入社团
         [HttpPost("joinClub")]
         [ProducesResponseType(typeof(SuccessVO), 200)]
@@ -163,6 +174,8 @@ namespace ClubManager.Controllers
         {
             var studentId = Utils.GetCurrentUserId(this.User);
             var acts = _studentService.GetInActivitiesInfo(studentId,pq.Query);
+            //var inacts = _studentService.SearchInActivity(studentId, pq.Query);
+            //var dif = acts.Except(inacts);
             return Ok(PaginatedList<ActivityVO>.Create(acts, pq.PageNumber ?? 1, pq.PageSize));
         }
 
@@ -172,7 +185,10 @@ namespace ClubManager.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetOutActivityInfo([FromBody] PageQO pq)
         {
+            //var studentId = Utils.GetCurrentUserId(this.User);
+            //var inacts = _studentService.SearchInActivity(studentId, pq.Query);
             var acts = _studentService.GetOutActivitiesInfo( pq.Query);
+            //var dif = acts.Except(inacts);
             return Ok(PaginatedList<ActivityVO>.Create(acts, pq.PageNumber ?? 1, pq.PageSize));
         }
 
