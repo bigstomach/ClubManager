@@ -25,5 +25,6 @@ namespace ClubManager.Services
         IQueryable<ActivityVO> GetOutActivitiesInfo(string query);
         IQueryable<ActivityVO> SearchInActivity(long id, string query);
         bool ParticipateActivity(long StudentId, ParticipateActivityQO newParticipateActivityQO);
+        IQueryable<AnnouncementVO> GetClubAnnouncements(long ClubId);
     }
 }
