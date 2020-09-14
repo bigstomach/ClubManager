@@ -179,21 +179,6 @@ namespace ClubManager.Services
             };
             return announce;
         }
-        //根据社团Id获取社团公告
-        public IQueryable<AnnouncementVO> GetClubAnnouncements(long ClubId)
-        {
-            var announce = (from man in _context.Managers
-                            join ann in _context.Announcements on man.StudentId equals ann.UserId
-                            where man.ClubId==ClubId
-                            orderby ann.Time descending
-                            select new AnnouncementVO
-                            {
-                                AnnouncementId = ann.AnnouncementId,
-                                Title = ann.Title,
-                                Content = ann.Content,
-                                Time = ann.Time
-                            }).AsNoTracking();
-            return announce;
-        }
+        
     }
 }
