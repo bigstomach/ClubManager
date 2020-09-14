@@ -57,7 +57,7 @@ namespace ClubManager.Services
          //--------------------------------社团解散-----------------------------------
         public bool DissolveClub(long clubId)
         {
-            _context.Clubs.Find(clubId).Status = false;
+            _context.Clubs.Find(clubId).Status = 0;
             _context.SaveChanges();
             return true;
         }
@@ -71,12 +71,17 @@ namespace ClubManager.Services
                 orderby JoinClub.ApplyDate descending
                 select new JoinClubVO
                 {
-                    ClubId=JoinClub.ClubId,
+                    
                     StudentId=JoinClub.StudentId,
+                    StudentName=JoinClub.Student.NumberNavigation.Name,
                     ApplyDate=JoinClub.ApplyDate,
                     ApplyReason=JoinClub.ApplyReason,
                     Status=JoinClub.Status
                 }).AsNoTracking();
+                if (!String.IsNullOrEmpty(query))
+            {
+                joinclub = joinclub.Where(JoinClub => JoinClub.StudentName.Contains(query));
+            }
             return joinclub;
         }
         //查看一个入社申请
@@ -86,7 +91,7 @@ namespace ClubManager.Services
                 .Where(a => a.ClubId == clubId && a.StudentId == StudentId)
                 .Select(a => new JoinClubVO
                 {
-                    ClubId = a.ClubId,
+                   StudentName =a.Student.NumberNavigation.Name,
                     StudentId = a.StudentId,
                     ApplyDate = a.ApplyDate,
                     ApplyReason = a.ApplyReason,
@@ -200,62 +205,34 @@ namespace ClubManager.Services
             _context.SaveChanges();
             return true;
         }
+       //获取所有申请参加本社团活动的申请
+        public IQueryable<ParticipateActivityVO> GetAllActivityApply( string query,long clubId)
+        {
+            var apply = (
+                from ParticipateActivity in _context.ParticipateActivity
+                join activity in _context.Activities
+                    on ParticipateActivity.ActivityId equals activity.ActivityId
+                where  activity.ClubId==clubId
+                orderby activity.ActivityId
+                select new ParticipateActivityVO
+                {
+                    StudentId = ParticipateActivity.StudentId,
+                    StudentName= ParticipateActivity.Student.NumberNavigation.Name,
+                    ActivityId = ParticipateActivity.ActivityId,
+                    ActivityName = ParticipateActivity.Activity.Name,
+                    ApplyDate = ParticipateActivity.ApplyDate,
+                    ApplyReason= ParticipateActivity.ApplyReason,
+                    Status= ParticipateActivity.Status
+                }).AsNoTracking();
+            if (!String.IsNullOrEmpty(query))
+            {
+                apply = apply.Where(m => m.ActivityName.Contains(query));
+            }
+
+            return apply;
+        }
         
-        //获取审核通过的活动成员列表
-        public IQueryable<MemberVO> GetActivityMem(long ActivityId, string query)
-        {
-            var members = (
-                from ParticipateActivity in _context.ParticipateActivity
-                join stu in _context.Students
-                    on ParticipateActivity.StudentId equals stu.StudentId
-                join stuMeta in _context.StudentMeta
-                    on stu.Number equals stuMeta.Number
-                where ParticipateActivity.ActivityId == ActivityId && ParticipateActivity.Status==true
-                orderby stu.Number
-                select new MemberVO
-                {
-                    StudentId = stu.StudentId,
-                    Number = stu.Number,
-                    Name = stuMeta.Name,
-                    Major = stuMeta.Major,
-                    Grade = stuMeta.Grade,
-                    Phone = stu.Phone
-                }).AsNoTracking();
-            if (!String.IsNullOrEmpty(query))
-            {
-                members = members.Where(m => m.Name.Contains(query));
-            }
-
-            return members;
-        }
-        //获取待审核的活动成员列表
-        public IQueryable<MemberVO> GetWaitActivityMem(long ActivityId, string query)
-        {
-            var members = (
-                from ParticipateActivity in _context.ParticipateActivity
-                join stu in _context.Students
-                    on ParticipateActivity.StudentId equals stu.StudentId
-                join stuMeta in _context.StudentMeta
-                    on stu.Number equals stuMeta.Number
-                where ParticipateActivity.ActivityId == ActivityId && ParticipateActivity.Status == false
-                orderby stu.Number
-                select new MemberVO
-                {
-                    StudentId = stu.StudentId,
-                    Number = stu.Number,
-                    Name = stuMeta.Name,
-                    Major = stuMeta.Major,
-                    Grade = stuMeta.Grade,
-                    Phone = stu.Phone
-                }).AsNoTracking();
-            if (!String.IsNullOrEmpty(query))
-            {
-                members = members.Where(m => m.Name.Contains(query));
-            }
-
-            return members;
-        }
-        //获取一个待审核的活动人员
+       //获取一个待审核的活动人员
         public ParticipateActivityVO GetOneWaitActivityMembers(long studentId, long activityId)
         {
             var part = _context.ParticipateActivity
@@ -263,7 +240,9 @@ namespace ClubManager.Services
                 .Select(a => new ParticipateActivityVO
                 {
                     StudentId = a.StudentId,
+                    StudentName =a.Student.NumberNavigation.Name,
                     ActivityId = a.ActivityId,
+                    ActivityName=a.Activity .Name,
                     ApplyDate = a.ApplyDate,
                     ApplyReason = a.ApplyReason,
                     Status = a.Status
@@ -467,6 +446,7 @@ namespace ClubManager.Services
                 Sponsor = sponsorshipQO.Sponsor,
                 Amount = sponsorshipQO.Amount,
                 Requirement = sponsorshipQO.Requirement,
+                 Status =0,
                 AdminId=null
             };
             _context.Sponsorships.Add(newSponsorship);
@@ -491,6 +471,10 @@ namespace ClubManager.Services
                     Suggestion = Sponsorships.Suggestion,
                     AdminId = Sponsorships.AdminId
                 }).AsNoTracking();
+                if (!String.IsNullOrEmpty(Query))
+            {
+                sponsorships = sponsorships.Where(Sponsorships => Sponsorships.Sponsor.Contains(Query));
+            }
             return sponsorships;
         }
         //获取一条详细赞助信息
