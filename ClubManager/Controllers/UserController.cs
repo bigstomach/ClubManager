@@ -125,13 +125,6 @@ namespace ClubManager.Controllers
             return Ok(announce);
         }
 
-        //根据社团Id获取社团公告
-        [HttpPost("getClubAnnouncements/{ClubId}")]
-        [ProducesResponseType(typeof(PaginatedList<AnnouncementVO>), 200)]
-        public IActionResult GetClubAnnouncements([FromBody] PageQO pq,long ClubId)
-        {
-            var announces = _userService.GetClubAnnouncements(ClubId);
-            return Ok(PaginatedList<AnnouncementVO>.Create(announces, pq.PageNumber ?? 1, pq.PageSize));
-        }
+       
     }
 }
