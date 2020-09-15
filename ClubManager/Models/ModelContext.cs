@@ -151,7 +151,7 @@ namespace ClubManager
 
                 entity.Property(e => e.EstablishmentDate).HasColumnType("DATE");
 
-                entity.Property(e => e.Logo).HasColumnType("BLOB");
+                entity.Property(e => e.Logo).HasColumnType("CLOB");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
