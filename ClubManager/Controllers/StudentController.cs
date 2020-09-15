@@ -166,6 +166,19 @@ namespace ClubManager.Controllers
         // ---------------------------------------------------------------------------------------
         // ------------------------------------活动部分--------------------------------------------
         // ---------------------------------------------------------------------------------------  
+        //参加活动之前先通过活动id判断是否加入或已申请
+        [HttpPost("judgeActivityJoin/{id}")]
+        [ProducesResponseType(typeof(SuccessVO), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult JudgeActivityJoin(long id)
+        {
+            var studentId = Utils.GetCurrentUserId(this.User);
+            SuccessVO success = new SuccessVO
+            {
+                IsSuccess = _studentService.JudgeActivityJoin(id, studentId)
+            };
+            return Ok(success);
+        }
         //获取已加入社团内部活动信息并分页
         [HttpPost("getInActivityInfo")]
         [ProducesResponseType(typeof(PaginatedList<ActivityVO>), 200)]

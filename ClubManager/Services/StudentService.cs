@@ -285,6 +285,15 @@ namespace ClubManager.Services
 
             return acts;
         }
+        //参加活动之前判断是否加入或是否已存在申请
+        public bool JudgeActivityJoin(long activityId, long studentId)
+        {
+            var test = _context.ParticipateActivity.FirstOrDefault(a =>
+                a.ActivityId == activityId && a.StudentId == studentId);
+            if (test != null) return false;//检测是否已存在该申请或已加入该活动，如果是，返回false
+            else
+                return true;//如果不是，返回ture
+        }
         //申请参加活动
         public bool ParticipateActivity(long StudentId, ParticipateActivityQO newParticipateActivityQO)
         {
