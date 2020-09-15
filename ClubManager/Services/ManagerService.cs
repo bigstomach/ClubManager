@@ -233,22 +233,25 @@ namespace ClubManager.Services
         }
         
        //获取一个待审核的活动人员
-        public ParticipateActivityVO GetOneWaitActivityMembers(long studentId, long activityId)
+       public ParticipateActivityVO GetOneWaitActivityMembers(long studentId, long activityId)
         {
-            var part = _context.ParticipateActivity
-                .Where(a => a.StudentId == studentId && a.ActivityId == activityId && a.Status==false)
-                .Select(a => new ParticipateActivityVO
-                {
-                    StudentId = a.StudentId,
-                    StudentName =a.Student.NumberNavigation.Name,
-                    ActivityId = a.ActivityId,
-                    ActivityName=a.Activity .Name,
-                    ApplyDate = a.ApplyDate,
-                    ApplyReason = a.ApplyReason,
-                    Status = a.Status
-                })
+            var part =( from pa in _context.ParticipateActivity
+                       join stu in _context.Students on pa.StudentId equals stu.StudentId
+                       join stumeta in _context.StudentMeta on stu.Number equals stumeta.Number
+                       join act in _context.Activities on pa.ActivityId equals act.ActivityId
+                       where  stu.StudentId == studentId && pa.ActivityId == activityId 
+                       select new ParticipateActivityVO
+                      {
+                        StudentId = pa.StudentId,
+                        StudentName = stumeta.Name,
+                        ActivityId = pa.ActivityId,
+                        ActivityName = act.Name,
+                        ApplyDate = pa.ApplyDate,
+                        ApplyReason = pa.ApplyReason,
+                        Status = pa.Status
+                      })
                 .AsNoTracking()
-                .FirstOrDefault();
+                 .FirstOrDefault();
             return part;
         }
         public void DeleteParticipate(long activityId, long studentId)
