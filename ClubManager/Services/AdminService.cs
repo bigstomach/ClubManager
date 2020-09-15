@@ -169,6 +169,51 @@ namespace ClubManager.Services
             return true;
         }
 
+        public IQueryable<ClubVO> GetClubs(string status, string query)
+        {
+            var nowyear = DateTime.Now.Year;
+            var ManagersOfClub = (
+                from Managers in _context.Managers
+                where Managers.Term == nowyear
+                select new
+                {
+                    ManageId = Managers.StudentId,
+                    ClubId = Managers.ClubId,
+                }).AsNoTracking();
+            var Club = (
+                from Clubs in _context.Clubs
+                join Managers in ManagersOfClub on Clubs.ClubId equals Managers.ClubId
+                join Students in _context.Students on Managers.ManageId equals Students.StudentId
+                join StudentMeta in _context.StudentMeta on Students.Number equals StudentMeta.Number
+                select new ClubVO
+                {
+                    ClubId = Clubs.ClubId,
+                    Name = Clubs.Name,
+                    PresidentName = StudentMeta.Name,
+                    Type = Clubs.Type,
+                    EstablishmentDate = Clubs.EstablishmentDate,
+                    ManagerId = Managers.ManageId,
+                    Status = Clubs.Status
+                }).AsNoTracking();
+            if (status == "unaudited")//社团状态
+            {
+                Club = Club.Where(c => c.Status == 2);
+            }
+            else if (status == "dissolved")
+            {
+                Club = Club.Where(c => c.Status == 0);
+            }
+            else if (status == "pass")
+            {
+                Club = Club.Where(c => c.Status == 1);
+            }
+
+            //模糊搜索
+            if (string.IsNullOrEmpty(query)) return Club;
+            Club = Club.Where(c => c.Name.Contains(query) || c.PresidentName.Contains(query));
+            return Club;
+        }
+
         public ClubVO GetClubDetails(long ClubId,long ManagerId)
         {
             var Club = (
@@ -208,6 +253,16 @@ namespace ClubManager.Services
                 Read = false
             };
             _context.Messages.Add(Message);
+            _context.SaveChanges();
+            return true;
+        }
+
+        public bool UpdateClubStatus(ClubStatusQO newClubStatus)
+        {
+            var Club = _context.Clubs.Find(newClubStatus.ClubId);
+            if (Club == null) return false;
+            _context.Clubs.Attach(Club);
+            Club.Status = newClubStatus.Status;
             _context.SaveChanges();
             return true;
         }

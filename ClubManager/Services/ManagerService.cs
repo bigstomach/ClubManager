@@ -368,7 +368,14 @@ namespace ClubManager.Services
             var mem = _context.JoinClub.FirstOrDefault(jc =>
                     jc.StudentId == id && jc.ClubId == clubId && jc.Status == true);
             if (mem == null) return false;
+            var clubName = GetClubName(clubId);
+            var msg = new Messages
+            {
+                Content = "很抱歉地通知您，您被" + clubName + "清退", Time = DateTime.Now, Read = false, UserId = id,
+                Title = "社团清退消息"
+            };
             _context.JoinClub.Remove(mem);
+            _context.Messages.Add(msg);
             _context.SaveChanges();
             return true;
         }
@@ -407,9 +414,18 @@ namespace ClubManager.Services
             {
                 _context.Managers.Remove(manager);
             }
-            _context.Managers.Add(new Managers {
+            var newManager = new Managers
+            {
                 ClubId = clubId, StudentId = id, Term = DateTime.Now.Year + 1
-            });
+            };
+            var clubName = GetClubName(clubId);
+            var msg = new Messages
+            {
+                Content = "恭喜您！您被" + clubName + "选为" + (DateTime.Now.Year + 1) + "届社长", Time = DateTime.Now,
+                Read = false, UserId = id, Title = "竞选成功消息"
+            };
+            _context.Managers.Add(newManager);
+            _context.Messages.Add(msg);
             _context.SaveChanges();
             return true;
         }
