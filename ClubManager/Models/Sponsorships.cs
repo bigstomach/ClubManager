@@ -12,7 +12,7 @@ namespace ClubManager
         public decimal Amount { get; set; }
         public string Requirement { get; set; }
         public DateTime ApplyDate { get; set; }
-        public int Status { get; set; }
+        public int Status { get; set; }//0 未审核；1 通过；2 未通过
         public string Suggestion { get; set; }
 
         public virtual Administrators Admin { get; set; }

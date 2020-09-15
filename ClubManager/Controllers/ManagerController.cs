@@ -86,20 +86,20 @@ namespace ClubManager.Controllers
             return Ok(join);
         }
         //入社审核结果
-        [HttpPost("joinResult/{studentId}")]
+        [HttpPost("joinResult")]
         [ProducesResponseType(404)]
         [ProducesResponseType(200)]
-        public IActionResult JoinResult(JoinClubStatusQO newStatus,long studentId)
+        public IActionResult JoinResult(JoinClubStatusQO newStatus)
         {
             var clubId = Utils.GetCurrentUserId(this.User);
             if (newStatus.Status == false)
             {
-                _managerService.DeleteJoin(clubId, studentId);
+                _managerService.DeleteJoin(clubId, newStatus.StudentId);
                 return Ok();
             }
             else
             {
-                _managerService.OkJoin(clubId, studentId);
+                _managerService.OkJoin(clubId, newStatus.StudentId);
                 return Ok();
             }
         
@@ -187,27 +187,20 @@ namespace ClubManager.Controllers
             if (exist) return Ok();
             return NotFound();
         }
+        //查看所有活动人员
+        [HttpPost("getAllActivityMembers")]
+        [ProducesResponseType(typeof(PaginatedList<ParticipateActivityVO>), 200)]
+        public IActionResult GetAllActivityMembers([FromBody] PageQO pq)
+        {
+            var clubId = Utils.GetCurrentUserId(this.User);
+            var memb = _managerService.GetAllActivityApply( pq.Query,  clubId);
+            return Ok(PaginatedList<ParticipateActivityVO>.Create(memb, pq.PageNumber ?? 1, pq.PageSize));
+        }
         
-        //查看审核通过活动人员
-        [HttpPost("getActivityMembers")]
-        [ProducesResponseType(typeof(PaginatedList<MemberVO>), 200)]
-        public IActionResult GetActivityMembers([FromBody] PageQO pq,long ActivityId)
-        {
-            var memb = _managerService.GetActivityMem(ActivityId, pq.Query);
-            return Ok(PaginatedList<MemberVO>.Create(memb, pq.PageNumber ?? 1, pq.PageSize));
-        }
-        //查看待审核活动人员
-        [HttpPost("getWaitActivityMembers/{ActivityId}")]
-        [ProducesResponseType(typeof(PaginatedList<MemberVO>), 200)]
-        public IActionResult GetWaitActivityMembers([FromBody] PageQO pq, long ActivityId)
-        {
-            var memb = _managerService.GetActivityMem(ActivityId, pq.Query);
-            return Ok(PaginatedList<MemberVO>.Create(memb, pq.PageNumber ?? 1, pq.PageSize));
-        }
         // 查看一个参加活动申请
-        [HttpPost("getOneWaitActivityMember")]
+        [HttpPost("getOneActivityMember")]
         [ProducesResponseType(typeof(ParticipateActivityVO), 200)]
-        public IActionResult GetOneWaitActivityMember(OneWaitActivityMemberQO aq)
+        public IActionResult GetOneActivityMember(OneWaitActivityMemberQO aq)
         {
             var part = _managerService.GetOneWaitActivityMembers( aq.studentId,aq.activityId);
             return Ok(part);

@@ -15,6 +15,6 @@ namespace ClubManager.Services
         IQueryable<AnnouncementVO> GetAnnouncements();
         AnnouncementVO GetOneAnnouncement(long id);
 
-        IQueryable<AnnouncementVO> GetClubAnnouncements(long ClubId);
+        
     }
 }
