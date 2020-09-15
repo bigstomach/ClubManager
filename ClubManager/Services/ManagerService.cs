@@ -38,7 +38,7 @@ namespace ClubManager.Services
                     Description=a.Description,
                     EstablishmentDate=a.EstablishmentDate,
                     Type=a.Type,
-                    
+                    Logo=a.Logo
 
                 })
                 .AsNoTracking()
