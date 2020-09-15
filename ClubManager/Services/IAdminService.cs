@@ -21,6 +21,7 @@ namespace ClubManager.Services
         ClubVO GetClubDetails(long ClubId,long ManagerId);
         bool SendMessage(MessageQO message);
         bool UpdateClubStatus(ClubStatusQO newClubStatus);
+
         //学生管理
         IQueryable<StudentMetaVO> GetStudentMetas(string status, string query);
         bool UpdateStudentMeta(StudentMetaQO newStudentMeta);

@@ -78,7 +78,7 @@ namespace ClubManager.Services
             _context.SaveChanges();
             return true;
         }
-
+        
         public bool UpdateSponStatus(SponsorshipStatusQO newStatus,long UserId)
         {
             long SponsorshipId = newStatus.SponsorshipId;
@@ -87,6 +87,32 @@ namespace ClubManager.Services
             _context.Sponsorships.Attach(Sponsorship);
             Sponsorship.Status = newStatus.Status;
             Sponsorship.AdminId = UserId;
+            _context.SaveChanges();
+            //系统自动发送审核结果消息给社团负责人
+            string MessageTitle;
+            string MessageContent;
+            if (Sponsorship.Status==1)
+            {
+                MessageTitle = "赞助审核通过";
+                MessageContent = "您的赞助申请已审核通过！";
+            }
+            else
+            {
+                MessageTitle = "赞助审核未通过";
+                MessageContent = "您的赞助申请未审核通过，请重新修改后再次提交！";
+            }
+            var ReceiveUser = _context.Users.Find(Sponsorship.ClubId);
+            if (ReceiveUser == null) return false;
+            var Message = new Messages
+            {
+                MessageId = _context.Messages.Select(m => m.MessageId).Max() + 1,
+                UserId = Sponsorship.ClubId,
+                Title = MessageTitle,
+                Content = MessageContent,
+                Time = DateTime.Now,
+                Read = false
+            };
+            _context.Messages.Add(Message);
             _context.SaveChanges();
             return true;
         }
@@ -166,19 +192,45 @@ namespace ClubManager.Services
             Activity.AdminId = UserId;
             Activity.Status = newActStatus.Status;
             _context.SaveChanges();
+            //系统自动发送审核结果消息给社团负责人
+            string MessageTitle;
+            string MessageContent;
+            if (Activity.Status == 1)
+            {
+                MessageTitle = "活动审核通过";
+                MessageContent = "您的活动申请已审核通过！";
+            }
+            else
+            {
+                MessageTitle = "活动审核未通过";
+                MessageContent = "您的活动申请未审核通过，请重新修改后再次提交！";
+            }
+            var ReceiveUser = _context.Users.Find(Activity.ClubId);
+            if (ReceiveUser == null) return false;
+            var Message = new Messages
+            {
+                MessageId = _context.Messages.Select(m => m.MessageId).Max() + 1,
+                UserId = Activity.ClubId,
+                Title = MessageTitle,
+                Content = MessageContent,
+                Time = DateTime.Now,
+                Read = false
+            };
+            _context.Messages.Add(Message);
+            _context.SaveChanges();
             return true;
         }
 
-        public IQueryable<ClubVO> GetClubs(string status, string query)
+        public IQueryable<ClubVO> GetClubs(string status,string query)
         {
             var nowyear = DateTime.Now.Year;
             var ManagersOfClub = (
                 from Managers in _context.Managers
-                where Managers.Term == nowyear
-                select new
+                where Managers.Term==nowyear
+                select  new
                 {
-                    ManageId = Managers.StudentId,
-                    ClubId = Managers.ClubId,
+                    ManageId=Managers.StudentId,
+                    Managers.ClubId,
                 }).AsNoTracking();
             var Club = (
                 from Clubs in _context.Clubs
@@ -195,15 +247,15 @@ namespace ClubManager.Services
                     ManagerId = Managers.ManageId,
                     Status = Clubs.Status
                 }).AsNoTracking();
-            if (status == "unaudited")//社团状态
+            if (status=="unaudited")//社团状态
             {
                 Club = Club.Where(c => c.Status == 2);
             }
-            else if (status == "dissolved")
+            else if (status=="dissolved")
             {
                 Club = Club.Where(c => c.Status == 0);
             }
-            else if (status == "pass")
+            else if (status=="pass")
             {
                 Club = Club.Where(c => c.Status == 1);
             }
@@ -233,7 +285,8 @@ namespace ClubManager.Services
                     Mail = Students.Mail,
                     Number = Students.Number,
                     Grade = StudentMeta.Grade,
-                    Major = StudentMeta.Major
+                    Major = StudentMeta.Major,
+                    Status = Clubs.Status
                 }).AsNoTracking().FirstOrDefault(m => m.ManagerId == ManagerId && m.ClubId == ClubId);
             return Club;
         }
@@ -261,6 +314,7 @@ namespace ClubManager.Services
         {
             var Club = _context.Clubs.Find(newClubStatus.ClubId);
             if (Club == null) return false;
+            if (Club.Status != 2) return false;
             _context.Clubs.Attach(Club);
             Club.Status = newClubStatus.Status;
             _context.SaveChanges();
@@ -314,8 +368,14 @@ namespace ClubManager.Services
         {
             var studentMeta = _context.StudentMeta.Find(number);
             if (studentMeta == null) return false;//如果找不到该学号的学生就删除失败
-            var student = _context.Students.FirstOrDefault(s => s.Number == number);
-            if (student != null) return false;//如果该学生元信息已经申请了学生账号就不能删除
+            var student = (
+                from Students in _context.Students
+                select new
+                {
+                    Students.StudentId,
+                    Students.Number
+                }).AsNoTracking().FirstOrDefault(s => s.Number == number);
+            if (student != null) return false; //如果该学生元信息已经申请了学生账号就不能删除
             _context.StudentMeta.Remove(studentMeta);
             _context.SaveChanges();
             return true;
