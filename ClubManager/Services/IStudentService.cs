@@ -21,6 +21,7 @@ namespace ClubManager.Services
         bool JoinClub(long StudentId, JoinClub1QO newJoinClubQO);
         bool QuitOneClub(long studentId,long id);
         //活动部分（查询活动信息/申请参加活动）
+        bool JudgeActivityJoin(long activityId, long studentId);
         IQueryable<ActivityVO> GetInActivitiesInfo(long studentId,string query);
         IQueryable<ActivityVO> GetOutActivitiesInfo(string query);
         IQueryable<ActivityVO> SearchInActivity(long id, string query);
