@@ -10,7 +10,7 @@ namespace ClubManager.ViewObjects
         public DateTime EstablishmentDate { get; set; }
         public string PresidentName { get; set; }
         public int Type { get; set; }
-
+         public string Logo { get; set; }
         public long ManagerId { get; set; }
         public string Phone { get; set; }
         public string Mail { get; set; }
