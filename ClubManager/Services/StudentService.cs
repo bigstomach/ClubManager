@@ -131,6 +131,7 @@ namespace ClubManager.Services
                         {
                             ClubId = club.ClubId,
                             Name = club.Name,
+                            Logo=club.Logo,
                             Description = club.Description,
                             EstablishmentDate = club.EstablishmentDate,
                             PresidentName = pname.Name,
@@ -191,6 +192,7 @@ namespace ClubManager.Services
                         {
                             ClubId = club.ClubId,
                             Name = club.Name,
+                            Logo=club.Logo,
                             Description = club.Description,
                             EstablishmentDate = club.EstablishmentDate,
                             PresidentName =pname.Name,
