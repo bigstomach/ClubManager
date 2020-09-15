@@ -39,12 +39,12 @@ namespace ClubManager.Controllers
         }
         
         //根据赞助id获取赞助详情
-        [HttpPost("getSponsorshipDetails/{id}")]
+        [HttpPost("getSponsorshipDetails")]
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(SponsorshipVO),200)]
-        public IActionResult GetSponsorshipDetails(long id)
+        public IActionResult GetSponsorshipDetails([FromBody]SponsorshipIdQO sponsorshipId)
         {
-            var Sponsorship = _adminService.GetSponsorshipDetails(id);
+            var Sponsorship = _adminService.GetSponsorshipDetails(sponsorshipId.SponsorshipId);
             if (Sponsorship == null) return NotFound();
             else return Ok(Sponsorship);
         }
@@ -91,12 +91,12 @@ namespace ClubManager.Controllers
         }
 
         //根据活动id获取活动详细内容
-        [HttpPost("getActivityDetails/{id}")]
+        [HttpPost("getActivityDetails")]
         [ProducesResponseType(typeof(ActivityVO),200)]
         [ProducesResponseType(404)]
-        public IActionResult GetActivityDetails(long id)
+        public IActionResult GetActivityDetails([FromBody] ActivityIdQO activityId)
         {
-            var Activity = _adminService.GetActivityDetails(id);
+            var Activity = _adminService.GetActivityDetails(activityId.ActivityId);
             if (Activity == null) return NotFound();
             else return Ok(Activity);
         }
@@ -131,7 +131,7 @@ namespace ClubManager.Controllers
 
         //获取社团列表
         [HttpPost("getClubs")]
-        [ProducesResponseType(typeof(PaginatedList<ClubVO>), 200)]
+        [ProducesResponseType(typeof(PaginatedList<ClubVO>),200)]
         [ProducesResponseType(404)]
         public ActionResult<PaginatedList<ClubVO>> GetClubs([FromBody] ClubListQO ClubPage)
         {
@@ -169,11 +169,11 @@ namespace ClubManager.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateClubStatus([FromBody] ClubStatusQO newClubStatus)
         {
-            if (newClubStatus.Status == 0) return NotFound();
             var exist = _adminService.UpdateClubStatus(newClubStatus);
             if (exist) return Ok();
             else return NotFound();
         }
+
 
         // ---------------------------------------------------------------------------------------
         // ------------------------------------学生元信息管理-------------------------------------
@@ -204,25 +204,25 @@ namespace ClubManager.Controllers
         }
 
         //更新学生毕业状态
-        [HttpPost("updateGraduate/{number}")]
+        [HttpPost("updateGraduate")]
         [ProducesResponseType(typeof(SuccessVO), 200)]
-        public IActionResult UpdateGraduate(int number)
+        public IActionResult UpdateGraduate([FromBody] StudentNumberQO studentNumber)
         {
             SuccessVO success = new SuccessVO
             {
-                IsSuccess = _adminService.UpdateGraduate(number)
+                IsSuccess = _adminService.UpdateGraduate(studentNumber.Number)
             };
             return Ok(success);
         }
 
         //删除学生信息
-        [HttpPost("deleteStudentMeta/{number}")]
+        [HttpPost("deleteStudentMeta")]
         [ProducesResponseType(typeof(SuccessVO), 200)]
-        public IActionResult DeleteStudentMeta(int number)
+        public IActionResult DeleteStudentMeta([FromBody] StudentNumberQO studentNumber)
         {
             SuccessVO success = new SuccessVO
             {
-                IsSuccess = _adminService.DeleteStudentMeta(number)
+                IsSuccess = _adminService.DeleteStudentMeta(studentNumber.Number)
             };
             return Ok(success);
         }
