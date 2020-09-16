@@ -92,11 +92,11 @@ namespace ClubManager.Controllers
 
         //获取全部社团信息
         [HttpPost("getClubInfo")]
-        [ProducesResponseType(typeof(ClubAllVO), 200)]
-        public ActionResult<PaginatedList<ClubVO>> GetClubInfo(string query)
+        [ProducesResponseType(typeof(NormalList<ClubVO>), 200)]
+        public IActionResult GetClubInfo(string query)
         {
             var clubs = _studentService.GetClubInfo(query);
-            return Ok(new ClubAllVO {Data = clubs.ToList()});
+            return Ok(new NormalList<ClubVO> {Data = clubs.ToList()});
         }
 
         //获取学生已加入社团的列表并分页

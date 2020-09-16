@@ -73,12 +73,12 @@ namespace ClubManager.Controllers
 
         //获取系统消息
         [HttpPost("getMessages")]
-        [ProducesResponseType(typeof(PaginatedList<MessageVO>),200)]
-        public IActionResult GetMessages([FromBody] PageQO pq)
+        [ProducesResponseType(typeof(NormalList<MessageVO>),200)]
+        public IActionResult GetMessages()
         {
             var userId = Utils.GetCurrentUserId(User);
             var messages = _userService.GetMessages(userId);
-            return Ok(PaginatedList<MessageVO>.Create(messages, pq.PageNumber ?? 1, pq.PageSize));
+            return Ok(new NormalList<MessageVO> {Data = messages.ToList()});
         }
 
         //根据id获取一条系统消息
@@ -107,11 +107,11 @@ namespace ClubManager.Controllers
 
         //获取系统公告
         [HttpPost("getSysAnnouncements")]
-        [ProducesResponseType(typeof(PaginatedList<AnnouncementVO>),200)]
-        public IActionResult GetSysAnnouncements([FromBody] PageQO pq)
+        [ProducesResponseType(typeof(NormalList<AnnouncementVO>),200)]
+        public IActionResult GetSysAnnouncements()
         {
             var announces = _userService.GetAnnouncements();
-            return Ok(PaginatedList<AnnouncementVO>.Create(announces, pq.PageNumber ?? 1, pq.PageSize));
+            return Ok(new NormalList<AnnouncementVO> {Data = announces.ToList()});
         }
 
         //根据id获取一条系统公告

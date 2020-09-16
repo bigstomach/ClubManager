@@ -2,8 +2,8 @@ using System.Collections.Generic;
 
 namespace ClubManager.ViewObjects
 {
-    public class ClubAllVO
+    public class NormalList<T>
     {
-        public List<ClubVO> Data { get; set; }
+        public List<T> Data { get; set; }
     }
 }
