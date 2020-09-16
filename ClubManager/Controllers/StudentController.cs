@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using ClubManager.helpers;
 using ClubManager.Services;
@@ -89,13 +90,13 @@ namespace ClubManager.Controllers
         // ------------------------------------社团部分--------------------------------------------
         // ---------------------------------------------------------------------------------------  
 
-        //获取全部社团信息并分页
+        //获取全部社团信息
         [HttpPost("getClubInfo")]
-        [ProducesResponseType(typeof(PaginatedList<ClubVO>), 200)]
-        public ActionResult<PaginatedList<ClubVO>> GetClubInfo([FromBody] PageQO pq)
+        [ProducesResponseType(typeof(ClubAllVO), 200)]
+        public ActionResult<PaginatedList<ClubVO>> GetClubInfo(string query)
         {
-            var clubs = _studentService.GetClubInfo(pq.Query);
-            return Ok(PaginatedList<ClubVO>.Create(clubs, pq.PageNumber ?? 1, pq.PageSize));
+            var clubs = _studentService.GetClubInfo(query);
+            return Ok(new ClubAllVO {Data = clubs.ToList()});
         }
 
         //获取学生已加入社团的列表并分页
