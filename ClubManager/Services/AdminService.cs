@@ -22,7 +22,7 @@ namespace ClubManager.Services
                 s => new SponsorshipVO
                 {
                     SponsorshipId = s.SponsorshipId,
-                   
+                    ClubName=s.Club.Name,
                     ApplyDate = s.ApplyDate,
                     Sponsor = s.Sponsor,
                     Amount = s.Amount,
