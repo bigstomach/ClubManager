@@ -21,13 +21,14 @@ namespace ClubManager.Services
         ClubVO GetClubDetails(long ClubId,long ManagerId);
         bool SendMessage(MessageQO message);
         bool UpdateClubStatus(ClubStatusQO newClubStatus);
-
         //学生管理
         IQueryable<StudentMetaVO> GetStudentMetas(string status, string query);
         bool UpdateStudentMeta(StudentMetaQO newStudentMeta);
         bool UpdateGraduate(int number);
         bool DeleteStudentMeta(int number);
         bool InsertStudentMeta(StudentMetaQO newStudentMetaQO);
+        //待办事项查询
+        TodoListVO GetTodo();
 
         IQueryable<AnnouncementVO> GetAnnounces(long adminId, string query);
         AnnouncementVO GetOneAnnounce(long adminId, long id);
