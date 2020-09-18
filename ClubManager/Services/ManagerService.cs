@@ -91,7 +91,7 @@ namespace ClubManager.Services
                 orderby jc.ApplyDate descending
                 select new JoinClubVO
                 {
-                    
+                    StudentId = stu.StudentId,
                     Number=stu.Number,
                     StudentName=stu.NumberNavigation.Name,
                     ApplyDate=jc.ApplyDate,
@@ -236,6 +236,7 @@ namespace ClubManager.Services
                 orderby activity.ActivityId
                 select new ParticipateActivityVO
                 {
+                    StudentId = ParticipateActivity.StudentId,
                     Number = ParticipateActivity.Student.Number,
                     StudentName= ParticipateActivity.Student.NumberNavigation.Name,
                     ActivityId = ParticipateActivity.ActivityId,
@@ -262,6 +263,7 @@ namespace ClubManager.Services
                        where  stu.StudentId == studentId && pa.ActivityId == activityId 
                        select new ParticipateActivityVO
                       {
+                          StudentId = stu.StudentId,
                         Number = stu.Number,
                         StudentName = stumeta.Name,
                         ActivityId = pa.ActivityId,

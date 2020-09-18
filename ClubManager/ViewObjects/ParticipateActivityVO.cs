@@ -7,7 +7,8 @@ namespace ClubManager.ViewObjects
 {
     public class ParticipateActivityVO
     {
-        public long Number { get; set; }
+        public long StudentId { get; set; }
+        public int Number { get; set; }
          public string StudentName { get; set; }
         public long ActivityId { get; set; }
          public string ActivityName { get; set; }
