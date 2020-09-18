@@ -125,6 +125,15 @@ namespace ClubManager.Controllers
             return Ok(announce);
         }
 
-       
+        [HttpPost("updateAvatar")]
+        [ProducesResponseType(200)]
+        public IActionResult UpdateAvatar(string imgUrl)
+        {
+            var userId = Utils.GetCurrentUserId(User);
+            _userService.UpdateAvatar(userId,imgUrl);
+            return Ok();
+        }
+
+
     }
 }

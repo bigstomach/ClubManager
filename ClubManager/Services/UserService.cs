@@ -179,6 +179,13 @@ namespace ClubManager.Services
             };
             return announce;
         }
+
+        public void UpdateAvatar(long userId, string imgUrl)
+        {
+            var user = _context.Users.Find(userId);
+            user.ImgUrl = imgUrl;
+            _context.SaveChanges();
+        }
         
     }
 }

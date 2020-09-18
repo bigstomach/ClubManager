@@ -8,7 +8,7 @@ namespace ClubManager.ViewObjects
     public class JoinClubVO
     {
         
-        public long StudentId { get; set; }
+        public long Number { get; set; }
          public string StudentName { get; set; }
         public DateTime ApplyDate { get; set; }
         public string ApplyReason { get; set; }

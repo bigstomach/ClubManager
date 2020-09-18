@@ -45,5 +45,7 @@ namespace ClubManager.Services
 
         void OkParticipate(long activityId, long studentId);
         bool SendMessage(MessageQO message);
+
+        ClubGraphVO GetCommunityGraph(long clubId);
     }
 }

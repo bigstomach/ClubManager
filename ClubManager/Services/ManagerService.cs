@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Permissions;
 using ClubManager.QueryObjects;
@@ -39,10 +40,28 @@ namespace ClubManager.Services
                     EstablishmentDate=a.EstablishmentDate,
                     Type=a.Type,
                     Logo=a.Logo
-
                 })
                 .AsNoTracking()
-                .FirstOrDefault();
+                .First();
+            var manager = (from man in _context.Managers
+                join stu in _context.Students on man.StudentId equals stu.StudentId
+                join stuMeta in _context.StudentMeta on stu.Number equals stuMeta.Number
+                where man.ClubId == clubId && man.Term == DateTime.Now.Year
+                select new StudentAllVO
+                {
+                    Number = stuMeta.Number,
+                    Name = stuMeta.Name,
+                    Grade = stuMeta.Grade,
+                    Major = stuMeta.Major,
+                    Mail = stu.Mail,
+                    Phone = stu.Phone
+                }).First();
+            club.Number = manager.Number;
+            club.PresidentName = manager.Name;
+            club.Grade = manager.Grade;
+            club.Major = manager.Major;
+            club.Mail = manager.Mail;
+            club.Phone = manager.Phone;
             return club;
         }
         //--------------------------------社团信息修改-----------------------------------
@@ -66,17 +85,18 @@ namespace ClubManager.Services
         public IQueryable<JoinClubVO> GetJoin(long clubId,string query)
         {
             var joinclub = (
-                from JoinClub in _context.JoinClub
-                where JoinClub.ClubId == clubId
-                orderby JoinClub.ApplyDate descending
+                from jc in _context.JoinClub
+                join stu in _context.Students on jc.StudentId equals stu.StudentId
+                where jc.ClubId == clubId && jc.Status==false
+                orderby jc.ApplyDate descending
                 select new JoinClubVO
                 {
                     
-                    StudentId=JoinClub.StudentId,
-                    StudentName=JoinClub.Student.NumberNavigation.Name,
-                    ApplyDate=JoinClub.ApplyDate,
-                    ApplyReason=JoinClub.ApplyReason,
-                    Status=JoinClub.Status
+                    Number=stu.Number,
+                    StudentName=stu.NumberNavigation.Name,
+                    ApplyDate=jc.ApplyDate,
+                    ApplyReason=jc.ApplyReason,
+                    Status=jc.Status
                 }).AsNoTracking();
                 if (!String.IsNullOrEmpty(query))
             {
@@ -92,7 +112,7 @@ namespace ClubManager.Services
                 .Select(a => new JoinClubVO
                 {
                    StudentName =a.Student.NumberNavigation.Name,
-                    StudentId = a.StudentId,
+                    Number = a.Student.Number,
                     ApplyDate = a.ApplyDate,
                     ApplyReason = a.ApplyReason,
                     Status =a.Status
@@ -216,7 +236,7 @@ namespace ClubManager.Services
                 orderby activity.ActivityId
                 select new ParticipateActivityVO
                 {
-                    StudentId = ParticipateActivity.StudentId,
+                    Number = ParticipateActivity.Student.Number,
                     StudentName= ParticipateActivity.Student.NumberNavigation.Name,
                     ActivityId = ParticipateActivity.ActivityId,
                     ActivityName = ParticipateActivity.Activity.Name,
@@ -242,7 +262,7 @@ namespace ClubManager.Services
                        where  stu.StudentId == studentId && pa.ActivityId == activityId 
                        select new ParticipateActivityVO
                       {
-                        StudentId = pa.StudentId,
+                        Number = stu.Number,
                         StudentName = stumeta.Name,
                         ActivityId = pa.ActivityId,
                         ActivityName = act.Name,
@@ -515,6 +535,58 @@ namespace ClubManager.Services
                 .AsNoTracking()
                 .FirstOrDefault();
             return spo;
+        }
+        
+        //获取社团图表数据
+        public ClubGraphVO GetCommunityGraph(long clubId)
+        {
+            var graph = (from jc in _context.JoinClub
+                join stu in _context.Students on jc.StudentId equals stu.StudentId
+                join stuMeta in _context.StudentMeta on stu.Number equals stuMeta.Number
+                where jc.ClubId == clubId && stuMeta.Status && jc.Status
+                select new StuClub
+                {
+                    StudentId=stu.StudentId,
+                    Grade = stuMeta.Grade,
+                    Major = stuMeta.Major
+                }).AsNoTracking();
+
+            var gradeGraph = graph
+                .GroupBy(g => g.Grade)
+                .Select(g => new GradeGroup
+                {
+                    Grade = g.Key,
+                    Count = g.Count()
+                }).ToList();
+
+            List<string> gradeGraphDescription=new List<string>();
+            List<int> gradeGraphData=new List<int>();
+            
+            foreach (var gradeData in gradeGraph)
+            {
+                gradeGraphDescription.Add(gradeData.Grade-2000+"级");
+                gradeGraphData.Add(gradeData.Count);
+            }
+            
+
+            var majorGraph = graph
+                .GroupBy(g => g.Major)
+                .Select(g => new MajorGroup
+                {
+                    Major = g.Key.ToString(),
+                    Count = g.Count()
+                }).ToList();
+
+            List<KeyValue> majorGraphData = majorGraph.Select(majorData => new KeyValue {Value = majorData.Count, Name = majorData.Major}).ToList();
+
+            var clubGraph = new ClubGraphVO
+            {
+                GradeGraphDescription = gradeGraphDescription,
+                GradeGraphData = gradeGraphData,
+                MajorGraphData = majorGraphData
+            };
+            
+            return clubGraph;
         }
     }
 }

@@ -14,7 +14,6 @@ namespace ClubManager.Services
         bool SetMessageRead(long userId,long id);
         IQueryable<AnnouncementVO> GetAnnouncements();
         AnnouncementVO GetOneAnnouncement(long id);
-
-        
+        void UpdateAvatar(long userId, string imgUrl);
     }
 }

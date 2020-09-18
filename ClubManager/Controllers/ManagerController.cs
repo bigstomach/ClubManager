@@ -412,6 +412,18 @@ namespace ClubManager.Controllers
             }
             return Ok(mem);
         }
+        
+        //--------------------------------------获取图表数据--------------------------------------------
+
+        [HttpPost("getCommunityGraph")]
+        [ProducesResponseType(typeof(ClubGraphVO), 200)]
+        public IActionResult GetCommunityGraph()
+        {
+            var clubId = Utils.GetCurrentUserId(User);
+            var data = _managerService.GetCommunityGraph(clubId);
+            return Ok(data);
+        }
+        
 
     }
 }
