@@ -400,6 +400,32 @@ namespace ClubManager.Services
             return true;
         }
 
+        public TodoListVO GetTodo()
+        {
+            var club = (
+                from Club in _context.Clubs
+                where Club.Status == 2
+                select Club.ClubId
+                      );
+            var sponsorship = (
+                from Sponsorship in _context.Sponsorships
+                where Sponsorship.Status == 0
+                select Sponsorship.SponsorshipId
+                );
+            var activity = (
+                from Activity in _context.Activities
+                where Activity.Status == 0
+                select Activity.ActivityId
+                );
+            var Result = new TodoListVO
+            {
+                Club = club.Count(),
+                Sponsorship = sponsorship.Count(),
+                Activity = activity.Count()
+            };
+            return Result;
+        }
+
         //--------------------------------公告增删改查-----------------------------------
 
         //获取自己写的系统公告列表
